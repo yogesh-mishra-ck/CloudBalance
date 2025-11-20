@@ -1,0 +1,35 @@
+.form-same-row{
+    display: flex;
+    gap: 50px;
+}
+
+.form-container, .align-form-data{
+    display: flex;
+    flex-direction: column;
+    padding-left: 8px;
+    /* align-items: center; */
+}
+
+form{
+    /* background-color: thistle; */
+    height: 950px;
+}
+
+.form-input{
+    border-radius: 3px;
+    padding: 10px;  
+    border: 1px solid #d7d7d7;
+}
+
+.inputFormDiv input:focus{
+    outline: none;
+    border-color: #4a90e2;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+    box-shadow: 0 0 3px rgba(74,144,226,0.4);
+}
+
+.select-input{
+    border-radius: 3px;
+    padding: 10px;  
+    border: 1px solid #d7d7d7;
+    width: 200px;
+}
