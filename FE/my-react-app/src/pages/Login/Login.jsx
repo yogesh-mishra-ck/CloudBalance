@@ -30,7 +30,7 @@ function Login() {
         <img
           src={ckImage}
           alt="CK Logo"
-          className="box-border w-60 relative top-80 mx-auto"
+          className="box-border w-60 relative mx-auto"
         />
 
         {/* Form */}

@@ -7,10 +7,10 @@ import { SidebarContext } from "../UserContext/SidebarContext";
 
 function Dashboard() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const toggleSidebar = () => setIsCollapsed(prev => !prev);
+  // const toggleSidebar = () => setIsCollapsed(prev => !prev);
 
   return (
-    <SidebarContext.Provider value={{ isCollapsed, toggleSidebar }}>
+    <SidebarContext.Provider value={{ isCollapsed, setIsCollapsed }}>
       <div className="flex flex-col min-h-screen">
         <Navbar />
 

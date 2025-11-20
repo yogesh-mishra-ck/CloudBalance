@@ -34,8 +34,8 @@ function Navbar() {
                     <select
                         className="border-none bg-white relative focus:outline-none bottom-1.5 right-1"
                     >
-                        <option>A1</option>
-                        <option>A2</option>
+                        <option>AWS-U1</option>
+                        <option>AWS-U2</option>
                     </select>
                 </div>
 
