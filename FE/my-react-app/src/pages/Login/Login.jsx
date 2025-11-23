@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
-import ckImage from '../../assets/ck.png'
-import Footer from '../../components/Footer/Footer'
+import React, { useState } from "react";
+import ckImage from "../../assets/ck.png";
+import Footer from "../../components/Footer/Footer";
 
 function Login() {
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -12,9 +11,9 @@ function Login() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -25,7 +24,6 @@ function Login() {
           h-screen w-screen flex flex-col items-center justify-center
         "
       >
-
         {/* Logo */}
         <img
           src={ckImage}
@@ -34,10 +32,7 @@ function Login() {
         />
 
         {/* Form */}
-        <form
-          className="flex flex-col w-[600px] justify-center gap-5"
-        >
-
+        <form className="flex flex-col w-[600px] justify-center gap-5">
           {/* Email */}
           <div className="flex flex-col">
             <label htmlFor="email">Email</label>
@@ -79,14 +74,27 @@ function Login() {
           <button
             className="
               bg-[#3584e4] rounded-sm p-[15px] text-white 
-              font-bold mt-[15px]
+              font-bold mt-[15px] cursor-pointer
             "
           >
             LOGIN
           </button>
         </form>
-
       </section>
+      <footer className="flex justify-between items-start border-2 px-5 bg-gray-100 text-shadow-lg absolute bottom-0 rounded-xs transition-all duration-300 ease-in-out">
+        <div className="flex justify-between w-[1812px]">
+          <div className="flex gap-4">
+            <span>Have a Question</span>
+            <span className="text-sky-700">Talk to our team</span>
+          </div>
+
+          <div className="flex gap-4">
+            <span>Cloudkeeper 2025</span>
+            <span className="text-lg relative bottom-1 text-slate-400 p-0.5">|</span>
+            <span>All Rights Reserved</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
