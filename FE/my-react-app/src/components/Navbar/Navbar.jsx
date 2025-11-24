@@ -50,7 +50,7 @@ function Navbar() {
                     src={people}
                     className="border-2 border-[#468ec9] rounded-[40px] p-[5px] bg-white 
                             shadow-sky-700 shadow-xs h-[30px]"
-                    alt=""
+                    alt="People logo"
                 />
 
                 <main className="flex flex-col leading-[1.1]">
@@ -58,7 +58,7 @@ function Navbar() {
 
                     <span className="flex items-center gap-[3px]">
                         <p className="m-0">Yogesh Mishra</p>
-                        <img src={i} className="h-5" alt="" />
+                        <img src={i} className="h-5" alt="Username" />
                     </span>
                 </main>
                 </div>

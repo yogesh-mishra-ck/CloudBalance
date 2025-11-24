@@ -90,7 +90,9 @@ function Login() {
 
           <div className="flex gap-4">
             <span>Cloudkeeper 2025</span>
-            <span className="text-lg relative bottom-1 text-slate-400 p-0.5">|</span>
+            <span className="text-lg relative bottom-1 text-slate-400 p-0.5">
+              |
+            </span>
             <span>All Rights Reserved</span>
           </div>
         </div>
