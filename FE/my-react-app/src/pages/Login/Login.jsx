@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import ckImage from "../../assets/ck.png";
 import Footer from "../../components/Footer/Footer";
 import { useNavigate } from "react-router-dom";
+import { emailRegex } from "../../utils/regex";
+import Snackbar from "@mui/material/Snackbar";
+
 
 function Login() {
   const navigate = useNavigate();
@@ -9,6 +12,9 @@ function Login() {
     email: "",
     password: "",
   });
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+    
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,10 +26,35 @@ function Login() {
 
   const handleSubmit = (e)=>{
     e.preventDefault();
+    setErrorMessage('');
+    if(!validateInputs()){
+      setIsFormSubmitted(true);
+      return;
+    }
+
+    setIsFormSubmitted(true);
     const token = { isAuthenticated: true };
     localStorage.setItem('token', JSON.stringify(token));
     navigate('/dashboard')
   }
+    const validateInputs = ()=>{
+  
+      if(!formData.email.trim()){
+        setErrorMessage('Email is required');
+        return false;
+      }
+      if(!emailRegex.test(formData.email)){
+        setErrorMessage('Email is invalid');
+        return false;
+      }
+
+      if(!formData.password.trim()){
+        setErrorMessage('Password is required');
+        return false;
+      }
+      
+      return true;
+    }
 
   useEffect(()=>{
     const storedToken = localStorage.getItem('token');
@@ -114,6 +145,21 @@ function Login() {
           </div>
         </div>
       </footer>
+
+       <Snackbar
+              open={isFormSubmitted}
+              autoHideDuration={3000}
+              onClose={() => setIsFormSubmitted(false)}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              message={ errorMessage}
+              ContentProps={{
+                sx: {
+                  background: "#F87171",
+                  color: "black",
+                  fontWeight: 500,
+                },
+              }}
+            ></Snackbar>
     </div>
   );
 }
