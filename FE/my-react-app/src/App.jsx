@@ -28,6 +28,7 @@ function App() {
           <Route element={<ProtectedRoutes/>}>
             <Route path='/dashboard' element={<Dashboard/>}>
               {/* <Route index element={<div>Welcome to CloudBalance</div>} /> */}
+            <Route index element={<UserManagement/>}/>
               <Route path='cost-explorer' element={ <CostExplorer/> }/>
               <Route path='user-management' element={ <UserManagement/> }/>
               <Route path='aws-services' element={<AwS_Services/>} />

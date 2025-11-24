@@ -70,9 +70,9 @@ function AddUser() {
     <div>
       <h2 className="pl-4 py-2 px-4 font-bold text-3xl">Add New User</h2>
 
-      <form action="#" className="h-[950px]" onSubmit={handleSubmit}>
+      <form action="#" className="min-h-screen" onSubmit={handleSubmit}>
         <div className="flex flex-col pl-2">
-          <div className="flex gap-[50px]">
+          <div className="flex gap-12">
             <div className="flex flex-col pl-2">
               <label htmlFor="firstName">First Name</label>
               <input
@@ -82,7 +82,7 @@ function AddUser() {
                 placeholder="Enter First Name"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="rounded-sm p-2.5 border border-gray-300 focus:outline-0 focus:border-gray-300 focus:shadow-[0_0_3px_rgba(74,144,226,0.4)]"
+                className="rounded-sm p-2.5 border border-gray-300 focus:outline-0 focus:border-gray-300 focus:shadow-sm"
               />
             </div>
 
@@ -95,12 +95,12 @@ function AddUser() {
                 placeholder="Enter Last Name"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="rounded-sm p-2.5 border border-gray-300 focus:outline-0 focus:border-gray-300 focus:shadow-[0_0_3px_rgba(74,144,226,0.4)]"
+                className="rounded-sm p-2.5 border border-gray-300 focus:outline-0 focus:border-gray-300 focus:shadow-sm"
               />
             </div>
           </div>
 
-          <div className="flex gap-[50px] mt-3.5">
+          <div className="flex gap-12 mt-3.5">
             <div className="flex flex-col pl-2">
               <label htmlFor="email">Email ID</label>
               <input
@@ -110,7 +110,7 @@ function AddUser() {
                 value={formData.emailId}
                 placeholder="Enter Email ID"
                 onChange={handleChange}
-                className="rounded-sm p-2.5 border border-gray-300 focus:outline-0 focus:border-gray-300 focus:shadow-[0_0_3px_rgba(74,144,226,0.4)]"
+                className="rounded-sm p-2.5 border border-gray-300 focus:outline-0 focus:border-gray-300 focus:shadow-sm"
               />
             </div>
 
@@ -121,7 +121,7 @@ function AddUser() {
                 id="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="border border-sm p-2.5 border-gray-300 w-[230px] rounded-sm"
+                className="border border-sm p-2.5 border-gray-300 w-56 rounded-sm"
               >
                 <option value="">Select role</option>
                 <option value="admin">Admin</option>
@@ -133,8 +133,8 @@ function AddUser() {
         </div>
          <button
           className="border cursor-pointer mt-3 ml-3.5
-          bg-[#3584e4] rounded-sm p-[7px] text-white 
-            font-bold w-[230px]
+          bg-blue-500 rounded-sm p-2 text-white 
+            font-bold w-56
         "
         >
           Submit

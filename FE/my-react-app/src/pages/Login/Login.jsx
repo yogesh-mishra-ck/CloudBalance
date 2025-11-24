@@ -49,7 +49,7 @@ function Login() {
         />
 
         {/* Form */}
-        <form className="flex flex-col w-[600px] justify-center gap-5" onSubmit={handleSubmit}>
+        <form className="flex flex-col w-full max-w-2xl justify-center gap-5" onSubmit={handleSubmit}>
           {/* Email */}
           <div className="flex flex-col">
             <label htmlFor="email">Email</label>
@@ -61,7 +61,7 @@ function Login() {
               value={formData.email}
               onChange={handleChange}
               className="
-                rounded-[3px] p-2.5 border border-[#d7d7d7]
+                rounded-sm p-2.5 border border-[#d7d7d7]
                 focus:outline-none focus:border-[#4a90e2]
                 focus:shadow-sm
                 
@@ -80,7 +80,7 @@ function Login() {
               value={formData.password}
               onChange={handleChange}
               className="
-                rounded-[3px] p-2.5 border border-[#d7d7d7]
+                rounded-sm p-2.5 border border-[#d7d7d7]
                 focus:outline-none focus:border-[#4a90e2]
                 focus:shadow-sm
               "
@@ -90,16 +90,16 @@ function Login() {
           {/* Login Button */}
           <button
             className="
-              bg-[#3584e4] rounded-sm p-[15px] text-white 
-              font-bold mt-[15px] cursor-pointer
+              bg-blue-500 rounded-sm py-3 text-white 
+              font-bold mt-3 cursor-pointer
             "
           >
             LOGIN
           </button>
         </form>
       </section>
-      <footer className="flex justify-between items-start border-2 px-5 bg-gray-100 text-shadow-lg absolute bottom-0 rounded-xs transition-all duration-300 ease-in-out">
-        <div className="flex justify-between w-[1812px]">
+      <footer className="flex justify-between items-start border-2 px-5 bg-gray-100 text-shadow-lg absolute bottom-0 rounded-xs transition-all duration-300 ease-in-out w-full">
+        <div className="flex justify-between w-full">
           <div className="flex gap-4">
             <span>Have a Question</span>
             <span className="text-sky-700">Talk to our team</span>

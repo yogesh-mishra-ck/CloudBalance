@@ -21,8 +21,8 @@ function Sidebar() {
 
   return (
     <div
-      className={`flex flex-col h-screen border-r pr-2 border-gray-400 w-55 [&_img]:h-10 gap-2 pt-5 transition-all duration-300
-                ${isCollapsed ? "w-[90px] px-2" : "w-[220px] px-4"}`}
+      className={`flex flex-col h-screen border-r pr-2 border-gray-400 gap-2 pt-5 transition-all duration-300
+                ${isCollapsed ? "w-24 px-2" : "w-56 px-4"}`}
     >
       {dashboardTypes.map((currentDashboard) => {
         return (
@@ -40,7 +40,7 @@ function Sidebar() {
           >
 
             <div className={
-              `transition-all duration-300 object-contain flex flex-col items-center justify-center
+              `transition-all duration-300 flex flex-col items-center justify-center
               ${isCollapsed ? ' h-10 w-10': 'h-12 w-12'}
               `
             }>

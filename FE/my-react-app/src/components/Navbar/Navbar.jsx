@@ -27,12 +27,12 @@ function Navbar() {
         <nav className="flex w-full h-16 p-3 gap-5 shadow-lg shadow-lg-300">
 
             {/* 1st part */}
-            <img className="h-[34px] cursor-pointer" src={CloudKeeper_Logo} alt="" />
+            <img className="h-8 cursor-pointer" src={CloudKeeper_Logo} alt="" />
 
             {/* 2nd part */}
-            <div className="flex gap-[18px] w-[1200px] mt-[9px]">
+            <div className="flex gap-4 w-full max-w-screen mt-2">
 
-                <img onClick={handleOnClick} className="h-[30px] relative bottom-1.0 cursor-pointer" src={hamburger} alt="" />
+                <img onClick={handleOnClick} className="h-7 relative bottom-1 cursor-pointer" src={hamburger} alt="" />
 
                 <div className="flex flex-col items-start relative bottom-1.5">
                     <strong>Module</strong>
@@ -48,21 +48,21 @@ function Navbar() {
             </div>
 
             {/* 3rd part */}
-            <div className="flex gap-3 relative left-[60px]">
+            <div className="flex items-center gap-4 shrink-0">
 
                 {/* People + Welcome */}
                 <div className="flex items-center gap-1.5">
                 <img
                     src={people}
-                    className="border-2 border-[#468ec9] rounded-[40px] p-[5px] bg-white 
-                            shadow-sky-700 shadow-xs h-[30px]"
+                    className="border-2 border-[#468ec9] rounded-full p-1 bg-white 
+                            shadow-sky-700 shadow-xs h-7"
                     alt="People logo"
                 />
 
-                <main className="flex flex-col leading-[1.1]">
+                <main className="flex flex-col leading-tight">
                     <p className="text-[#2677e2] font-bold">Welcome,</p>
 
-                    <span className="flex items-center gap-[3px]">
+                    <span className="flex items-center gap-1">
                         <p className="m-0">Yogesh Mishra</p>
                         <img src={i} className="h-5" alt="Username" />
                     </span>
@@ -70,19 +70,19 @@ function Navbar() {
                 </div>
 
                 {/* Vertical Divider */}
-                <p className="text-[40px] mb-[50px] text-[#f0e9e3] relative bottom-[13px]">
+                <p className="text-4xl text-[#f0e9e3]">
                 |
                 </p>
 
                 {/* Logout Button */}
                 <button
                  onClick={handleLogout}
-                className="flex items-center justify-around w-[150px] h-[55px] 
-                            p-2.5 gap-3 border-2 border-[#5093d1] rounded 
-                            text-[#5093d1] font-black bg-white text-[16px] relative bottom-1.5 cursor-pointer"
+                className="flex items-center justify-center w-39 h-14 
+                             gap-3 border-2 border-[#5093d1] rounded 
+                            text-[#5093d1] font-black bg-white text-base cursor-pointer"
                 
                 >
-                <img src={logout} alt="" className='h-[25px]' />
+                <img src={logout} alt="" className='h-8' />
                 <p className="font-black">Logout</p>
                 </button>
 
