@@ -7,15 +7,21 @@ import './styles.css';
 import Footer from '../Footer/Footer'
 import { useContext } from "react"
 import { SidebarContext } from "../UserContext/SidebarContext"
+import { Navigate, useNavigate } from "react-router-dom"
 
 
 function Navbar() {
+        const navigate = useNavigate();
+        const { isCollapsed, setIsCollapsed } = useContext(SidebarContext);
 
-    const { isCollapsed, setIsCollapsed } = useContext(SidebarContext);
+        const handleOnClick = () => {
+            setIsCollapsed(!isCollapsed);
+        } 
 
-    const handleOnClick = () => {
-        setIsCollapsed(!isCollapsed);
-    } 
+        const handleLogout = ()=>{
+            localStorage.removeItem('token');
+            navigate('/')
+    }
   return (
     <div>
         <nav className="flex w-full h-16 p-3 gap-5 shadow-lg shadow-lg-300">
@@ -70,9 +76,11 @@ function Navbar() {
 
                 {/* Logout Button */}
                 <button
+                 onClick={handleLogout}
                 className="flex items-center justify-around w-[150px] h-[55px] 
                             p-2.5 gap-3 border-2 border-[#5093d1] rounded 
-                            text-[#5093d1] font-black bg-white text-[16px] relative bottom-1.5"
+                            text-[#5093d1] font-black bg-white text-[16px] relative bottom-1.5 cursor-pointer"
+                
                 >
                 <img src={logout} alt="" className='h-[25px]' />
                 <p className="font-black">Logout</p>

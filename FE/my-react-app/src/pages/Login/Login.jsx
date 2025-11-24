@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ckImage from "../../assets/ck.png";
 import Footer from "../../components/Footer/Footer";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -10,12 +12,27 @@ function Login() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
+
+  const handleSubmit = (e)=>{
+    e.preventDefault();
+    const token = { isAuthenticated: true };
+    localStorage.setItem('token', JSON.stringify(token));
+    navigate('/dashboard')
+  }
+
+  useEffect(()=>{
+    const storedToken = localStorage.getItem('token');
+    if(storedToken){
+      const token = JSON.parse(storedToken);
+      if(token?.isAuthenticated)
+        navigate('/dashboard')
+    }
+  },[navigate])
 
   return (
     <div>
@@ -32,7 +49,7 @@ function Login() {
         />
 
         {/* Form */}
-        <form className="flex flex-col w-[600px] justify-center gap-5">
+        <form className="flex flex-col w-[600px] justify-center gap-5" onSubmit={handleSubmit}>
           {/* Email */}
           <div className="flex flex-col">
             <label htmlFor="email">Email</label>

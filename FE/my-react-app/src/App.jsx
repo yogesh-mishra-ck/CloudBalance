@@ -14,6 +14,7 @@ import UserManagement from './pages/UserManagement/UserManagement'
 import AwS_Services from './pages/AWS_Services/AwS_Services'
 import Onboarding from './pages/Onboarding/Onboarding'
 import AddUser from './pages/AddUser/AddUser'
+import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes'
 
 
 function App() {
@@ -23,14 +24,18 @@ function App() {
         <Routes>
           <Route path='/' element={ <Login/> } />
           <Route path='/login' element={ <Login/> } />
-          <Route path='/dashboard' element={<Dashboard/>}>
-            {/* <Route index element={<div>Welcome to CloudBalance</div>} /> */}
-            <Route path='cost-explorer' element={ <CostExplorer/> }/>
-            <Route path='user-management' element={ <UserManagement/> }/>
-            <Route path='aws-services' element={<AwS_Services/>} />
-            <Route path='onboarding' element={<Onboarding/>} />
-            <Route path='add-user' element={ <AddUser/> } />
+
+          <Route element={<ProtectedRoutes/>}>
+            <Route path='/dashboard' element={<Dashboard/>}>
+              {/* <Route index element={<div>Welcome to CloudBalance</div>} /> */}
+              <Route path='cost-explorer' element={ <CostExplorer/> }/>
+              <Route path='user-management' element={ <UserManagement/> }/>
+              <Route path='aws-services' element={<AwS_Services/>} />
+              <Route path='onboarding' element={<Onboarding/>} />
+              <Route path='add-user' element={ <AddUser/> } />
+            </Route>
           </Route>
+
           <Route path='*' element={<div>404 Not Found Page</div>} />
         </Routes>
       </BrowserRouter>
