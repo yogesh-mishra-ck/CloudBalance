@@ -10,16 +10,16 @@ function UserTable() {
   // const data = users;
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [updatedData, setUpdatedData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
         setTimeout(async () => {
           const resp = await axios.get("http://localhost:3000/api/users");
           const retrivedData = resp.data;
-          console.log(retrivedData);
-          setData(retrivedData.users);
-          setIsLoading(true);
+          // console.log(retrivedData);
+          const newDataWithActive = retrivedData.users.map((prev) => ({ ...prev, isActive: false }));
+          setData(newDataWithActive);
+          setIsLoading(false);
         }, 1000);
       } catch (error) {
         console.log("Error during fetching data" + error);
@@ -29,15 +29,9 @@ function UserTable() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (data.length > 0) {
-      setUpdatedData(data.map((prev) => ({ ...prev, isActive: false })));
-      setIsLoading(false);
-    }
-  }, [data]);
 
   const toggleStatus = (id) => {
-    setUpdatedData((prevData) =>
+    setData((prevData) =>
       prevData.map((user) =>
         user.id === id ? { ...user, isActive: !user.isActive } : user
       )
@@ -76,7 +70,7 @@ function UserTable() {
                     </td>
                   </tr>
                 ) : (
-                  updatedData.map((currentUser) => (
+                  data.map((currentUser) => (
                     <tr
                       key={currentUser.email}
                       className="[&_td]:bg-zinc-50 [&_td]:px-4 

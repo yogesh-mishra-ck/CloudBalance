@@ -10,7 +10,7 @@ function AddUser() {
     role: "",
   };
   const [formData, setFormData] = useState(initialState);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const [submittedName, setSubmittedName] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -20,51 +20,48 @@ function AddUser() {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
-    setErrorMessage('')
-    if(!validateInputs()){
-      setIsFormSubmitted(true);
-      return;
-    }
-    setIsFormSubmitted(true);
+    const isValid = validateInputs();
+    setIsFormSubmitted(true); 
+
+    if (!isValid) return;
     setSubmittedName(formData.firstName);
     setFormData(initialState);
   };
 
-  const validateInputs = ()=>{
-
-    if(!formData.firstName.trim()){
-      setErrorMessage('First name is required');
+  const validateInputs = () => {
+    if (!formData.firstName.trim()) {
+      setErrorMessage("First name is required");
       return false;
     }
-    if(!nameRegex.test(formData.firstName)){
-      setErrorMessage('First Name is invalid');
+    if (!nameRegex.test(formData.firstName)) {
+      setErrorMessage("First Name is invalid");
       return false;
     }
-    if(!formData.lastName.trim()){
-      setErrorMessage('Last name is required');
+    if (!formData.lastName.trim()) {
+      setErrorMessage("Last name is required");
       return false;
     }
-    if(!nameRegex.test(formData.lastName)){
-      setErrorMessage('Last Name is invalid');
+    if (!nameRegex.test(formData.lastName)) {
+      setErrorMessage("Last Name is invalid");
       return false;
     }
-    if(!formData.emailId.trim()){
-      setErrorMessage('Email ID is required');
+    if (!formData.emailId.trim()) {
+      setErrorMessage("Email ID is required");
       return false;
     }
-    if(!emailRegex.test(formData.emailId)){
-      setErrorMessage('Emaild ID is invalid');
+    if (!emailRegex.test(formData.emailId)) {
+      setErrorMessage("Emaild ID is invalid");
       return false;
     }
-    if(!formData.role.trim()){
-      setErrorMessage('Please select a role');
+    if (!formData.role.trim()) {
+      setErrorMessage("Please select a role");
       return false;
     }
-    
 
     return true;
-  }
+  };
 
   return (
     <div>
@@ -131,7 +128,7 @@ function AddUser() {
             </div>
           </div>
         </div>
-         <button
+        <button
           className="border cursor-pointer mt-3 ml-3.5
           bg-blue-500 rounded-sm p-2 text-white 
             font-bold w-56
@@ -146,15 +143,17 @@ function AddUser() {
         autoHideDuration={3000}
         onClose={() => setIsFormSubmitted(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        message={ errorMessage || `User with name ${submittedName} created successfully`}
-        ContentProps={{
-          sx: {
+        message={
+          errorMessage || `User with name ${submittedName} created successfully`
+        }
+        sx={{
+          "& .MuiSnackbarContent-root": {
             background: errorMessage ? "#F87171" : "#E5E7EB",
             color: "black",
             fontWeight: 500,
           },
         }}
-      ></Snackbar>
+      />
     </div>
   );
 }
