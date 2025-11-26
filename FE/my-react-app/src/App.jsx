@@ -30,10 +30,13 @@ function App() {
               {/* <Route index element={<div>Welcome to CloudBalance</div>} /> */}
             <Route index element={<UserManagement/>}/>
               <Route path='cost-explorer' element={ <CostExplorer/> }/>
-              <Route path='user-management' element={ <UserManagement/> }/>
+              {/* <Route path='user-management' element={ <UserManagement/> }/> */}
+              <Route path='user-management' element={ <UserManagement/> }>
+                <Route path='add-user' element={ <AddUser/> } />
+              </Route>
               <Route path='aws-services' element={<AwS_Services/>} />
               <Route path='onboarding' element={<Onboarding/>} />
-              <Route path='add-user' element={ <AddUser/> } />
+              {/* <Route path='add-user' element={ <AddUser/> } /> */}
             </Route>
           </Route>
 

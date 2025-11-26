@@ -1,41 +1,60 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux"
 import EditIcon from "@mui/icons-material/Edit";
 import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import axios from "axios";
+import { storeUserTable } from "../../redux/action/actions";
+import { store } from "../../redux/store/store";
 
 function UserTable() {
   // const data = users;
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
+  const [localData, setLocalData] = useState([]);
+  
+  const users  = useSelector((state) => state.users);
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+
+    const initializeData = async ()=>{
+      if(users && users.length){
+
+        console.log("Using store's cached value");
+        setLocalData(users);
+        setIsLoading(false);
+        return;
+      }
+      console.log("Fetching data from api...")
+
       try {
         setTimeout(async () => {
           const resp = await axios.get("http://localhost:3000/api/users");
           const retrivedData = resp.data;
           // console.log(retrivedData);
           const newDataWithActive = retrivedData.users.map((prev) => ({ ...prev, isActive: false }));
-          setData(newDataWithActive);
-          setIsLoading(false);
+          setLocalData(newDataWithActive);
+          dispatch(storeUserTable(newDataWithActive))
+          setIsLoading(false)
+          // setIsLoading(false);
         }, 1000);
       } catch (error) {
         console.log("Error during fetching data" + error);
         setIsLoading(false);
       }
-    };
-    fetchData();
-  }, []);
+    }
+    initializeData();
+  },[]);
 
 
   const toggleStatus = (id) => {
-    setData((prevData) =>
-      prevData.map((user) =>
-        user.id === id ? { ...user, isActive: !user.isActive } : user
-      )
-    );
+    const updatedData = localData.map((user)=>
+      user.id === id ? {...user, isActive: !user.isActive } : user
+    )
+    setLocalData(updatedData);
+    dispatch(storeUserTable(updatedData));
   };
 
   return (
@@ -70,7 +89,7 @@ function UserTable() {
                     </td>
                   </tr>
                 ) : (
-                  data.map((currentUser) => (
+                  localData.map((currentUser) => (
                     <tr
                       key={currentUser.email}
                       className="[&_td]:bg-zinc-50 [&_td]:px-4 
