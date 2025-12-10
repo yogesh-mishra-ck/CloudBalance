@@ -8,26 +8,25 @@ import BreadCrumb from "../BreadCrumb/BreadCrumb";
 
 function Dashboard() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  // const toggleSidebar = () => setIsCollapsed(prev => !prev);
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, setIsCollapsed }}>
-      
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col h-screen">  
         <Navbar />
 
-        <div className="flex">
+        <div className="flex flex-1 overflow-hidden">
           <Sidebar />
-          <main className="pt-2">
-            <BreadCrumb/>
+
+          <main className="flex-1 overflow-y-auto px-6 pt-2 bg-gray-100">
+            <BreadCrumb />
             <Outlet />
             <Footer />
           </main>
         </div>
-
       </div>
     </SidebarContext.Provider>
   );
 }
+
 
 export default Dashboard;

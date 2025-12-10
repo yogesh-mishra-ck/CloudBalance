@@ -1,10 +1,9 @@
 import React from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 function BreadCrumb() {
 
     const location = useLocation();
-    // const params = useParams();
 
     const pathnames = location.pathname.split("/").filter((x)=>x);
     const pathnamesRender = pathnames.slice(1);

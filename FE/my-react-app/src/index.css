@@ -4,3 +4,8 @@ html, body, #root {
   padding: 0;
   overflow: hidden; /* prevent browser scroll outside dashboard */
 }
+
+.scrollable-content {
+  scrollbar-width: thin;
+  scrollbar-color: #b8b8b8 transparent;
+}

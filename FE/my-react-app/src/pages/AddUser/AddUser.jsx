@@ -148,7 +148,7 @@ function AddUser() {
         }
         sx={{
           "& .MuiSnackbarContent-root": {
-            background: errorMessage ? "#F87171" : "#E5E7EB",
+            background: errorMessage ? "#F87171" : "#4ADE80",
             color: "black",
             fontWeight: 500,
           },

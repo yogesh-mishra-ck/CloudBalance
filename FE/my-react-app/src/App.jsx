@@ -15,34 +15,37 @@ import AwS_Services from './pages/AWS_Services/AwS_Services'
 import Onboarding from './pages/Onboarding/Onboarding'
 import AddUser from './pages/AddUser/AddUser'
 import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes'
+import {Toaster} from "sonner";
+import Onboarding2 from './pages/Onboarding/Onboarding2'
+import Onboarding3 from './pages/Onboarding/Onboarding3'
+import Onboarding_Parent from './pages/Onboarding/Onboarding_Parent'
 
 
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={ <Login/> } />
-          <Route path='/login' element={ <Login/> } />
+      <Toaster richColors/>
+        <BrowserRouter>
+          <Routes>
+            <Route path='/' element={ <Login/> } />
+            <Route path='/login' element={ <Login/> } />
 
-          <Route element={<ProtectedRoutes/>}>
-            <Route path='/dashboard' element={<Dashboard/>}>
-              {/* <Route index element={<div>Welcome to CloudBalance</div>} /> */}
-            <Route index element={<UserManagement/>}/>
-              <Route path='cost-explorer' element={ <CostExplorer/> }/>
-              {/* <Route path='user-management' element={ <UserManagement/> }/> */}
-              <Route path='user-management' element={ <UserManagement/> }>
-                <Route path='add-user' element={ <AddUser/> } />
+            <Route element={<ProtectedRoutes/>}>
+              <Route path='/dashboard' element={<Dashboard/>}>
+              <Route index element={<UserManagement/>}/>
+                <Route path='cost-explorer' element={ <CostExplorer/> }/>
+                <Route path='user-management' element={ <UserManagement/> }>
+                  <Route path='add-user' element={ <AddUser/> } />
+                </Route>
+                <Route path='aws-services' element={<AwS_Services/>} />
+                <Route path='onboarding' element={<Onboarding_Parent/>} />
               </Route>
-              <Route path='aws-services' element={<AwS_Services/>} />
-              <Route path='onboarding' element={<Onboarding/>} />
-              {/* <Route path='add-user' element={ <AddUser/> } /> */}
             </Route>
-          </Route>
 
-          <Route path='*' element={<div>404 Not Found Page</div>} />
-        </Routes>
-      </BrowserRouter>
+            <Route path='*' element={<div>404 Not Found Page</div>} />
+          </Routes>
+        </BrowserRouter>
+      
     </>
   )
 }
