@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.management.relation.Role;
 import java.security.Key;
 import java.util.Date;
 
@@ -16,12 +17,13 @@ public class JWTUtil {
 
     private final String SECRET = "53485HKRFDJBVMXBVSJFKUWEOIFHNSDJBVJDRTRBDFDVXCZRA";
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
-    private final long EXPIRATION_TIME = 1000*60*60;
+    private final long EXPIRATION_TIME = 1000*60*15;
 
-    public String generateToken(String username){
+    public String generateToken(String email, String role){
         return Jwts
                 .builder()
-                .setSubject(username)
+                .setSubject(email)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis()+EXPIRATION_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
