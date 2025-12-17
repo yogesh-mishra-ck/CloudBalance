@@ -13,8 +13,8 @@ public enum Roles {
         this.permissions = permissions;
     }
 
-
     public Set<Permissions> getPermissions(){
         return permissions;
     }
+
 }

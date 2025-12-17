@@ -2,11 +2,12 @@ package com.myBackend.CloudBalance.config;
 
 import com.myBackend.CloudBalance.entity.Permissions;
 import com.myBackend.CloudBalance.filters.JwtAuthFilter;
-import com.myBackend.CloudBalance.security.JwtAccessDeniedHandler;
+//import com.myBackend.CloudBalance.security.JwtAccessDeniedHandler;
 import com.myBackend.CloudBalance.security.JwtAuthenticationEntryPoint;
 import com.myBackend.CloudBalance.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -32,12 +33,12 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+//    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    SecurityConfig(JwtAuthFilter jwtAuthFilter, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler){
+    SecurityConfig(JwtAuthFilter jwtAuthFilter, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint){
         this.jwtAuthFilter = jwtAuthFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+//        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
     }
 
     @Bean
@@ -48,12 +49,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.
                                 requestMatchers("/login").permitAll()
-//                                .requestMatchers(HttpMethod.GET, "/healthy").hasAuthority(Permissions.READ.name())
-//                                .requestMatchers(HttpMethod.POST, "/healthy").hasAuthority(Permissions.WRITE.name())
+                                .requestMatchers(HttpMethod.GET, "/healthy").hasAuthority(Permissions.READ.name())
+                                .requestMatchers(HttpMethod.POST, "/healthy").hasAuthority(Permissions.WRITE.name())
+
                                 .anyRequest().authenticated())
                         .exceptionHandling(ex ->
                                 ex
-                                        .accessDeniedHandler(jwtAccessDeniedHandler)
                                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         );
 

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -29,13 +30,15 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDenied(){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(403, "You do not have sufficient permission to access this resource"));
     }
 
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneralException(){
+    public ResponseEntity<ApiError> handleGeneralException(Exception E){
+        System.out.println("THE EXCEPTION IS THIS"+E);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiError(500, "INTERNAL SERVER ERROR!! Something went wrong"));
     }
 }

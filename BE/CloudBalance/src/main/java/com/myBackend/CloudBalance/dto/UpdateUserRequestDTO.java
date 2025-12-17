@@ -1,5 +1,6 @@
 package com.myBackend.CloudBalance.dto;
 
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -11,12 +12,23 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthRequestDTO {
+public class UpdateUserRequestDTO {
 
-    @Email
+//    @NotBlank(message = "ID is required")
+//    private Long id;
+
+    @NotBlank(message = "First Name is required")
+    private String firstName;
+
+    @NotBlank(message = "Last Name is required")
+    private String lastName;
+
     @NotBlank(message = "Email is required")
+    @Email
     private String email;
 
-    @NotBlank(message = "Password is required")
-    private String password;
+    @NotBlank(message = "Role is required")
+    private String role;
+
+
 }

@@ -1,5 +1,6 @@
 package com.myBackend.CloudBalance.service;
 
+import com.myBackend.CloudBalance.entity.User;
 import com.myBackend.CloudBalance.repository.UserDetailsRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

@@ -5,10 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,6 +27,8 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+//@Table(name = "user")
 public class User implements UserDetails {
 
     @Id
@@ -59,6 +58,27 @@ public class User implements UserDetails {
     @NotNull(message = "Role is required")
     @Enumerated(EnumType.STRING)
     private Roles role;
+
+
+    //owning side
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_accounts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_id")
+    )
+    @Builder.Default
+    private Set<Account> accounts = new HashSet<>();
+
+
+    public void addAccount(Account account){
+        if(accounts.contains(account))
+            return;
+
+        accounts.add(account);
+        account.getUsers().add(this);
+
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

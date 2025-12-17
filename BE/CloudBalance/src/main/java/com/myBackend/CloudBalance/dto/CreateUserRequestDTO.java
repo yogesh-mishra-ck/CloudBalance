@@ -11,12 +11,21 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthRequestDTO {
+public class CreateUserRequestDTO {
 
-    @Email
+    @NotBlank(message = "First Name is required")
+    private String firstName;
+
+    @NotBlank(message = "Last Name is required")
+    private String lastName;
+
     @NotBlank(message = "Email is required")
+    @Email
     private String email;
 
     @NotBlank(message = "Password is required")
     private String password;
+
+    @NotBlank(message = "Role is required")
+    private String role;
 }
