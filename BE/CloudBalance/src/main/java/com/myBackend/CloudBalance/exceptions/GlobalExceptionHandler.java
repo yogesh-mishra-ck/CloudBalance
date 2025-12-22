@@ -30,10 +30,10 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<ApiError> handleAccessDenied(){
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(403, "You do not have sufficient permission to access this resource"));
-    }
+//    @ExceptionHandler(AuthorizationDeniedException.class)
+//    public ResponseEntity<ApiError> handleAccessDenied(){
+//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(403, "You do not have sufficient permission to access this resource"));
+//    }
 
 
     @ExceptionHandler(Exception.class)

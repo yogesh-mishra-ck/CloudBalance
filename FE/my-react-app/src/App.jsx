@@ -32,7 +32,7 @@ function App() {
 
             <Route element={<ProtectedRoutes/>}>
               <Route path='/dashboard' element={<Dashboard/>}>
-              <Route index element={<UserManagement/>}/>
+              <Route index element={<CostExplorer/>}/>
                 <Route path='cost-explorer' element={ <CostExplorer/> }/>
                 <Route path='user-management' element={ <UserManagement/> }>
                   <Route path='add-user' element={ <AddUser/> } />

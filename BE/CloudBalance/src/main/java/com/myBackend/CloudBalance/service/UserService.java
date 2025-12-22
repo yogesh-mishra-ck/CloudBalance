@@ -43,6 +43,8 @@ public class UserService {
 
     public CreateUserResponseDTO createUser(CreateUserRequestDTO createUserRequestDTO) {
 
+
+
         Roles role = Roles.valueOf(createUserRequestDTO.getRole().toUpperCase());
         User user = User.builder()
                 .firstName(createUserRequestDTO.getFirstName())
@@ -125,4 +127,6 @@ public class UserService {
                 account.getArnNumber()))
                 .toList();
     }
+
+
 }

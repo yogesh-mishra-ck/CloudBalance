@@ -5,9 +5,10 @@ import logout from "../../assets//logout.svg"
 import i from "../../assets/i.svg"
 import './styles.css';
 import Footer from '../Footer/Footer'
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { SidebarContext } from "../UserContext/SidebarContext"
 import { Navigate, useNavigate } from "react-router-dom"
+import axios from "axios"
 
 
 function Navbar() {
@@ -18,10 +19,24 @@ function Navbar() {
             setIsCollapsed(!isCollapsed);
         } 
 
-        const handleLogout = ()=>{
-            localStorage.removeItem('token');
-            navigate('/')
-    }
+        const handleLogout = async()=>{
+
+            try{
+                const res = await axios.post("http://localhost:8080/logout");
+                if(res.status === 200){
+                    navigate("login");
+                }
+            }catch(e){
+                console.log("Error occured "+e);
+            }
+
+            // localStorage.removeItem('token');
+            // navigate('/')
+        }
+
+        // useEffect(()=>{
+        //     navigate("/login");
+        // },[navigate]);
   return (
     <div>
         <nav className="flex w-full h-16 p-3 gap-5 shadow-lg shadow-lg-300">

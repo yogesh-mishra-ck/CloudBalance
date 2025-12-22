@@ -16,4 +16,9 @@ public interface UserDetailsRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT a FROM User u JOIN u.accounts a  WHERE u.id = ?1")
     List<Account> findAccountByUserId(Long userId);
+
+        //    SELECT a FROM Account a
+        //    WHERE a.user.id = :userId;
+
+        //better performance than user.getAll() because user.getAll uses join
 }

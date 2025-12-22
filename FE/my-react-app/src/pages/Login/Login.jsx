@@ -4,6 +4,7 @@ import Footer from "../../components/Footer/Footer";
 import { useNavigate } from "react-router-dom";
 import { emailRegex } from "../../utils/regex";
 import { Snackbar } from "@mui/material";
+import axios, { Axios } from "axios"
 
 function Login() {
   const navigate = useNavigate();
@@ -32,23 +33,51 @@ function Login() {
       return;
     } 
 
-    setIsFormSubmitted(true);
+    try{
+       const loginAPIFunction = async () => {
+        const res = await axios.post("http://localhost:8080/login", {
+          email: formData.email,
+          password: formData.password
+        }, { withCredentials: true });
 
-    const token = { isAuthenticated: true };
-    localStorage.setItem('token', JSON.stringify(token));
-    setTimeout(()=>{
-      navigate('/dashboard')
-    },500)
+        console.log(res);
+        if(res.status === 200){
+
+          const token = { isAuthenticated: true };
+          localStorage.setItem('token', JSON.stringify(token));
+
+          navigate("/dashboard");
+        }
+    };
+    loginAPIFunction();
+    }catch(err){
+      setErrorMessage("Inavlid email or password");
+      setIsFormSubmitted(true);
+    }
+
+    // setIsFormSubmitted(true);
+
+    // setTimeout(()=>{
+    //   navigate('/dashboard')
+    // },500)
+
+
+
+    // setTimeout(()=>{
+    //   navigate('/dashboard')
+    // },500)
   }
 
-  useEffect(()=>{
-    const storedToken = localStorage.getItem('token');
-    if(storedToken){
-      const token = JSON.parse(storedToken);
-      if(token?.isAuthenticated)
-        navigate('/dashboard')
-    }
-  },[navigate])
+
+
+  // useEffect(()=>{
+  //   const storedToken = localStorage.getItem('token');
+  //   if(storedToken){
+  //     const token = JSON.parse(storedToken);
+  //     if(token?.isAuthenticated)
+  //       navigate('/dashboard')
+  //   }
+  // },[navigate])
 
    const validateInputs = () => {
       if (!formData.email.trim()) {
@@ -64,10 +93,10 @@ function Login() {
         return false;
       }
 
-      if(!isPasswordValid(formData.password)){
-        setErrorMessage("Make a stronger password with atleast 1 uppercase letter, 1 lowercase letter, 1 numeric value, 1 special-symbol and length atleast 6 and max 11")
-        return false;
-      }
+      // if(!isPasswordValid(formData.password)){
+      //   setErrorMessage("Make a stronger password with atleast 1 uppercase letter, 1 lowercase letter, 1 numeric value, 1 special-symbol and length atleast 6 and max 11")
+      //   return false;
+      // }
       return true;
     };
     
