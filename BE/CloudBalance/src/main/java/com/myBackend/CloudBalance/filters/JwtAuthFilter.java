@@ -29,29 +29,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
     private final BlacklistRepository blacklistRepository;
 
-
-//    JwtAuthFilter(JWTUtil jwtUtil, CustomUserDetailsService customUserDetailsService){
-//        this.jwtUtil = jwtUtil;
-//        this.customUserDetailsService = customUserDetailsService;
-//    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        Cookie[] cookies = request.getCookies();
-        String token = null;
-        String username = null;
-//
-        if(cookies != null ){
-            for(Cookie cookie: cookies){
-                if("JWT".equals(cookie.getName())){
-                    token = cookie.getValue();
-                    break;
-                }
-            }
+        String path = request.getServletPath();
+        if(path.startsWith("login") || path.startsWith("refresh")){
+            filterChain.doFilter(request, response);
+            return;
         }
-//        System.out.println(token);
-        if(token != null ){
+
+        String authHeader = request.getHeader("Authorization");
+        if(authHeader == null || !(authHeader.startsWith("Bearer "))){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = authHeader.substring(7);
+
+
+//        Cookie[] cookies = request.getCookies();
+//        String token = null;
+//        String username = null;
+//
+//        if(cookies != null ){
+//            for(Cookie cookie: cookies){
+//                if("token".equals(cookie.getName())){
+//                    token = cookie.getValue();
+//                    break;
+//                }
+//            }
+//        }
+        String username = null;
+        if(!token.isEmpty() ){
             try{
                 username = jwtUtil.extractUsername(token);
                 if(username!=null && SecurityContextHolder.getContext().getAuthentication() == null){
@@ -60,19 +69,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     if(jwtUtil.validateToken(username, userDetails, token)){
 
                         //blacklist logic
-                        if(!isTokenBlacklisted(token)){
+//                        if(!isTokenBlacklisted(token)){
                             UsernamePasswordAuthenticationToken authenticationToken =
                                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                            System.out.println("JWT Authenticated: " + authenticationToken.getAuthorities());
-
-                        }
-
-//                        UsernamePasswordAuthenticationToken authenticationToken =
-//                                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//                        System.out.println("JWT Authenticated: " + authenticationToken.getAuthorities());
-
+//                            System.out.println("JWT Authenticated: " + authenticationToken.getAuthorities());
+//
+//                        }
                     }else{
                         System.out.println("JWT token invalid");
                         SecurityContextHolder.clearContext();

@@ -78,7 +78,7 @@ public class UserService {
     }
 
     @Transactional
-    public CreateAccountResponseDTO createAccount(@Valid CreateAccountRequestDTO createAccountRequestDTO, Long userId) {
+    public CreateAccountResponseDTO createAccount( CreateAccountRequestDTO createAccountRequestDTO, Long userId) {
 
         User user = userDetailsRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found with this id"));
         Account account = Account.builder()
@@ -91,7 +91,6 @@ public class UserService {
         accountRepository.save(account);
         user.addAccount(account);
         userDetailsRepository.save(user);
-
 
         return new CreateAccountResponseDTO(account.getId(), account.getAccountName());
     }

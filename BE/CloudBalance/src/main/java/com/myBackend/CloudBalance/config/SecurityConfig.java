@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/login").permitAll()
+                                .requestMatchers("/refresh").permitAll()
                                 .requestMatchers("/logout").permitAll()
 //                                .requestMatchers(HttpMethod.GET, "/healthy").hasAuthority(Permissions.READ.name())
 //                                .requestMatchers(HttpMethod.POST, "/healthy").hasAuthority(Permissions.WRITE.name())
