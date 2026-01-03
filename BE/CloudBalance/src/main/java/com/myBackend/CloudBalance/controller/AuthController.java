@@ -3,9 +3,9 @@ package com.myBackend.CloudBalance.controller;
 import com.myBackend.CloudBalance.dto.AuthRequestDTO;
 import com.myBackend.CloudBalance.entity.RefreshToken;
 import com.myBackend.CloudBalance.entity.User;
-import com.myBackend.CloudBalance.security.RefreshTokenService;
-import com.myBackend.CloudBalance.service.AuthService;
-import com.myBackend.CloudBalance.service.UserService;
+import com.myBackend.CloudBalance.service.impl.RefreshTokenServiceImpl;
+import com.myBackend.CloudBalance.service.impl.AuthServiceImpl;
+import com.myBackend.CloudBalance.service.impl.UserServiceImpl;
 import com.myBackend.CloudBalance.util.JWTUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,33 +28,21 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final UserService userService;
-    private final AuthService authService;
-    private final RefreshTokenService refreshTokenService;
-
-    private User user = null;
+    private final UserServiceImpl userService;
+    private final AuthServiceImpl authService;
+    private final RefreshTokenServiceImpl refreshTokenService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response){
         System.out.println("Inside controller");
 
-//        if(authRequestDTO.getEmail()==null || authRequestDTO.getEmail().isEmpty() || authRequestDTO.getPassword()==null || authRequestDTO.getPassword().isEmpty()){
-//            throw new ValidationException();
-//        }
-//
-//            authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(authRequestDTO.getEmail(), authRequestDTO.getPassword())
-//            );
-//
-//           user = userService.getUser(authRequestDTO.getEmail());
-//           String token =  jwtUtil.generateToken(authRequestDTO.getEmail(), "ROLE_"+user.getRole().name());
-//
-
         Authentication authentication = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(authRequestDTO.getEmail(), authRequestDTO.getPassword()) );
         if(authentication.isAuthenticated()){
+            System.out.println("Hi "+authRequestDTO.getEmail());
+            System.out.println("Hi 2" + authRequestDTO.getPassword());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getEmail());
-            user = userService.getUser(authRequestDTO.getEmail());
-            String accessToken = jwtUtil.generateToken(authRequestDTO.getEmail(), "ROLE_"+user.getRole().name());
+            User user = userService.getUser(authRequestDTO.getEmail());
+            String accessToken = jwtUtil.generateToken(authRequestDTO.getEmail(), "ROLE_"+ user.getRole().name());
             ResponseCookie responseCookie = ResponseCookie.from("token", refreshToken.getToken())
                     .httpOnly(true)
                     .path("/")
@@ -74,7 +62,6 @@ public class AuthController {
         if(refreshToken!=null){
             refreshTokenService.deleteByToken(refreshToken);
         }
-//        Boolean tokenInvalidated = authService.invalidateToken(jwt);
 
         ResponseCookie deleteCookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
@@ -82,9 +69,7 @@ public class AuthController {
                 .maxAge(0)
                 .sameSite("Strict")
                 .build();
-//        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.noContent().header(HttpHeaders.SET_COOKIE, deleteCookie.toString()).build();
-
     }
 
     @PostMapping("/refresh")

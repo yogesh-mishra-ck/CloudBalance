@@ -1,18 +1,15 @@
 package com.myBackend.CloudBalance.config;
 
-import com.myBackend.CloudBalance.entity.Permissions;
 import com.myBackend.CloudBalance.entity.Roles;
 import com.myBackend.CloudBalance.filters.JwtAuthFilter;
 //import com.myBackend.CloudBalance.security.JwtAccessDeniedHandler;
 import com.myBackend.CloudBalance.security.CustomAccessDeniedHandler;
 import com.myBackend.CloudBalance.security.JwtAuthenticationEntryPoint;
-import com.myBackend.CloudBalance.service.CustomUserDetailsService;
+import com.myBackend.CloudBalance.service.impl.CustomUserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -21,13 +18,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -68,10 +62,13 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/user").hasAnyRole(Roles.ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, "/user/**").hasAnyRole(Roles.ADMIN.name())
 
+                                .requestMatchers("/me/**").authenticated()
+                                .requestMatchers("/admin/**").hasRole(Roles.ADMIN.name())
+
                                 //accounts
-                                .requestMatchers(HttpMethod.GET, "/user/account").hasRole(Roles.ADMIN.name()) //get all
-                                .requestMatchers(HttpMethod.POST,"/user/*/account").hasRole(Roles.ADMIN.name())
-                                .requestMatchers(HttpMethod.GET, "/user/*/account").hasAnyRole(Roles.CUSTOMER.name(), Roles.ADMIN.name()) //ALL accounts for user
+//                                .requestMatchers(HttpMethod.GET, "/user/account").hasRole(Roles.ADMIN.name()) //get all
+//                                .requestMatchers(HttpMethod.POST,"/user/*/account").hasRole(Roles.ADMIN.name())
+//                                .requestMatchers(HttpMethod.GET, "/user/*/account").hasAnyRole(Roles.CUSTOMER.name(), Roles.ADMIN.name()) //ALL accounts for user
 //
 //                                .requestMatchers("/{id}/account").hasAnyAuthority(Role.ADMIN,Role.CUSTOMER)
 //                                .requestMatchers(HttpMethod.POST,"/account/**").hasAnyRole(Role.ADMIN)
@@ -91,7 +88,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(CustomUserDetailsService customUserDetailsService, PasswordEncoder passwordEncoder){
+    public AuthenticationManager authenticationManager(CustomUserDetailsServiceImpl customUserDetailsService, PasswordEncoder passwordEncoder){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(customUserDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(daoAuthenticationProvider);

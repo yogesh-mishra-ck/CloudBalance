@@ -16,7 +16,6 @@ import java.util.Set;
 @Entity
 @Builder
 @ToString
-//@Table(name = "accounts")
 public class Account {
 
     @Id

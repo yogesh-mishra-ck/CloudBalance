@@ -1,6 +1,7 @@
 package com.myBackend.CloudBalance.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,10 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+//    @NotBlank(message = "Refresh token is required")
     private String token;
+
+//    @NotBlank(message = "Expiry Date is required")
     private Instant expiryDate;
 
     @ManyToOne(fetch = FetchType.LAZY)

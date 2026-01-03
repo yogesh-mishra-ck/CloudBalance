@@ -1,21 +1,16 @@
-package com.myBackend.CloudBalance.service;
+package com.myBackend.CloudBalance.service.impl;
 
-import com.myBackend.CloudBalance.entity.User;
 import com.myBackend.CloudBalance.repository.UserDetailsRepository;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserDetailsRepository userDetailsRepository;
-    public CustomUserDetailsService(UserDetailsRepository userDetailsRepository){
+    public CustomUserDetailsServiceImpl(UserDetailsRepository userDetailsRepository){
         this.userDetailsRepository = userDetailsRepository;
     }
 

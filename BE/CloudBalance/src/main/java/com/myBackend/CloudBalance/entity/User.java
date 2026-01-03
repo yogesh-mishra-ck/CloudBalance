@@ -56,7 +56,6 @@ public class User implements UserDetails {
     @Size(min = 8, message = "Password must be of at least length 8")
     private String password;
 
-    @NotNull(message = "Role is required")
     @Enumerated(EnumType.STRING)
     private Roles role;
 

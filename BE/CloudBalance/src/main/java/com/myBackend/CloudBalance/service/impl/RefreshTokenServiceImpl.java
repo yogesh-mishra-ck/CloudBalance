@@ -1,8 +1,9 @@
-package com.myBackend.CloudBalance.security;
+package com.myBackend.CloudBalance.service.impl;
 
 import com.myBackend.CloudBalance.entity.RefreshToken;
 import com.myBackend.CloudBalance.repository.RefreshTokenRepository;
 import com.myBackend.CloudBalance.repository.UserDetailsRepository;
+import com.myBackend.CloudBalance.service.RefreshTokenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class RefreshTokenService {
+public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private  final RefreshTokenRepository refreshTokenRepository;
     private final UserDetailsRepository userDetailsRepository;
@@ -38,7 +39,6 @@ public class RefreshTokenService {
         if(refreshToken.getExpiryDate().isBefore(Instant.now())){
             refreshTokenRepository.delete(refreshToken);
             throw new RuntimeException(refreshToken.getToken()+ " Refresh Token is expired! Login again");
-//            return false;
         }
         return true;
     }

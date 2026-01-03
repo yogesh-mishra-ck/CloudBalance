@@ -10,8 +10,6 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.nio.file.AccessDeniedException;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
@@ -28,12 +26,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleUserNotActive(){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(403, "User account has been disabled"));
     }
-
-
-//    @ExceptionHandler(AuthorizationDeniedException.class)
-//    public ResponseEntity<ApiError> handleAccessDenied(){
-//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(403, "You do not have sufficient permission to access this resource"));
-//    }
 
 
     @ExceptionHandler(Exception.class)
