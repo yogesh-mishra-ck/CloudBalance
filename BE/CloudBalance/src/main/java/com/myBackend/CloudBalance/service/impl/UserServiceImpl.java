@@ -41,8 +41,6 @@ public class UserServiceImpl implements UserService {
 
     public CreateUserResponseDTO createUser(CreateUserRequestDTO createUserRequestDTO) {
 
-
-
         Roles role = Roles.valueOf(createUserRequestDTO.getRole().toUpperCase());
         User user = User.builder()
                 .firstName(createUserRequestDTO.getFirstName())

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 //@Table(name = "user")
-public class User implements UserDetails {
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,7 +53,6 @@ public class User implements UserDetails {
     private Instant lastLogin;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be of at least length 8")
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -84,42 +83,5 @@ public class User implements UserDetails {
 
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-
-        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
-
-        Set<SimpleGrantedAuthority> permissionAuthorities = role.getPermissions().stream()
-                        .map(permissions -> new SimpleGrantedAuthority(permissions.name())).collect(Collectors.toSet());
-        authorities.addAll(permissionAuthorities);
-
-        return authorities;
-    }
-
-    @Override
-    public String getUsername() {
-        return getEmail();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
 
 }

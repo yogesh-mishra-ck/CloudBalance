@@ -68,8 +68,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public List<GetAccountsResponseDTO> getAllAccountsForASpecificUser(Long userId) {
-        User user = userDetailsRepository.findById(userId).orElseThrow(()-> new RuntimeException());
-        System.out.println(user.getAccounts());
+//        User user = userDetailsRepository.findById(userId).orElseThrow(()-> new RuntimeException("Logged in user is not valid"));
+//        System.out.println(user.getAccounts());
 
         List<Account> accounts = userDetailsRepository.findAccountByUserId(userId);
         return accounts.stream().map(account -> new GetAccountsResponseDTO(account.getId(),

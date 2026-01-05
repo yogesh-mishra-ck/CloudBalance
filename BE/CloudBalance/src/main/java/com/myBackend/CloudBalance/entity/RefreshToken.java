@@ -20,10 +20,8 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @NotBlank(message = "Refresh token is required")
     private String token;
 
-//    @NotBlank(message = "Expiry Date is required")
     private Instant expiryDate;
 
     @ManyToOne(fetch = FetchType.LAZY)

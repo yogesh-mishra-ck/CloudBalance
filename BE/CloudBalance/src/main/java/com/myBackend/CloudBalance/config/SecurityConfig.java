@@ -62,13 +62,11 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/user").hasAnyRole(Roles.ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, "/user/**").hasAnyRole(Roles.ADMIN.name())
 
+                                //accounts
                                 .requestMatchers("/me/**").authenticated()
                                 .requestMatchers("/admin/**").hasRole(Roles.ADMIN.name())
 
-                                //accounts
-//                                .requestMatchers(HttpMethod.GET, "/user/account").hasRole(Roles.ADMIN.name()) //get all
-//                                .requestMatchers(HttpMethod.POST,"/user/*/account").hasRole(Roles.ADMIN.name())
-//                                .requestMatchers(HttpMethod.GET, "/user/*/account").hasAnyRole(Roles.CUSTOMER.name(), Roles.ADMIN.name()) //ALL accounts for user
+
 //
 //                                .requestMatchers("/{id}/account").hasAnyAuthority(Role.ADMIN,Role.CUSTOMER)
 //                                .requestMatchers(HttpMethod.POST,"/account/**").hasAnyRole(Role.ADMIN)

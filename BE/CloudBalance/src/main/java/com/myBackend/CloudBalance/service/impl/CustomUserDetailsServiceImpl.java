@@ -1,5 +1,7 @@
 package com.myBackend.CloudBalance.service.impl;
 
+import com.myBackend.CloudBalance.entity.CustomUserDetails;
+import com.myBackend.CloudBalance.entity.User;
 import com.myBackend.CloudBalance.repository.UserDetailsRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +19,8 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         System.out.println("Printing email"+email);
-        return userDetailsRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("Username not found"));
+        User user = userDetailsRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("Username not found"));
+        return new CustomUserDetails(user);
+//        return userDetailsRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("Username not found"));
     }
 }

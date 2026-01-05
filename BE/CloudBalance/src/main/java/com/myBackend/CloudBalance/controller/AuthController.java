@@ -38,8 +38,7 @@ public class AuthController {
 
         Authentication authentication = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(authRequestDTO.getEmail(), authRequestDTO.getPassword()) );
         if(authentication.isAuthenticated()){
-            System.out.println("Hi "+authRequestDTO.getEmail());
-            System.out.println("Hi 2" + authRequestDTO.getPassword());
+
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getEmail());
             User user = userService.getUser(authRequestDTO.getEmail());
             String accessToken = jwtUtil.generateToken(authRequestDTO.getEmail(), "ROLE_"+ user.getRole().name());

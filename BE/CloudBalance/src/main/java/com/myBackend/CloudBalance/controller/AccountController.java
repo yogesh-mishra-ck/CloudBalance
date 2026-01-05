@@ -3,10 +3,12 @@ package com.myBackend.CloudBalance.controller;
 import com.myBackend.CloudBalance.dto.CreateAccountRequestDTO;
 import com.myBackend.CloudBalance.dto.CreateAccountResponseDTO;
 import com.myBackend.CloudBalance.dto.GetAccountsResponseDTO;
+import com.myBackend.CloudBalance.entity.CustomUserDetails;
 import com.myBackend.CloudBalance.entity.User;
 import com.myBackend.CloudBalance.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,14 +23,14 @@ public class AccountController {
     private final AccountService accountService;
 
 
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/me/account")
     public ResponseEntity<CreateAccountResponseDTO> createAccount(@Valid @RequestBody CreateAccountRequestDTO createAccountRequestDTO,Authentication authentication){
 
-        User user = (User) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        CreateAccountResponseDTO accountResponseDTO = accountService.createAccount(createAccountRequestDTO, user.getId());
-        return ResponseEntity.ok().body(accountResponseDTO);
+        CreateAccountResponseDTO accountResponseDTO = accountService.createAccount(createAccountRequestDTO, userDetails.getUserId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountResponseDTO);
     }
 
 
@@ -45,9 +47,9 @@ public class AccountController {
     @GetMapping("/me/account")
     public ResponseEntity<List<GetAccountsResponseDTO>> getMyAccounts(Authentication authentication){
 
-        User user = (User) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        List<GetAccountsResponseDTO> accountsResponseDTOS = accountService.getAllAccountsForASpecificUser(user.getId());
+        List<GetAccountsResponseDTO> accountsResponseDTOS = accountService.getAllAccountsForASpecificUser(userDetails.getUserId());
         return ResponseEntity.ok().body(accountsResponseDTOS);
     }
 }
