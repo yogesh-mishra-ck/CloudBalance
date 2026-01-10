@@ -1,30 +1,95 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FusionCharts from "fusioncharts";
 import Charts from "fusioncharts/fusioncharts.charts";
 import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 import ReactFC from "react-fusioncharts";
 import { rows } from "../../utils/cost_explorer_row_mockup.js";
+import axiosInstance from "../../utils/axiosInterceptor.js";
 
 Charts(FusionCharts);
 FusionTheme(FusionCharts);
 
-
-
 function CostExplorerCharts({ chartType, negativeAllowed }) {
+  ////////
+  // a
+  const generateMonths = () => {
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+
+      months.push({
+        monthName: date.toLocaleString("default", {
+          month: "long",
+          year: "numeric",
+        }),
+        monthKey:
+          date.toLocaleString("default", { month: "short" }).toLowerCase() +
+          date.getFullYear(),
+      });
+    }
+    return months;
+  };
+
+  const dynamicMonths = generateMonths();
   
-  const keysToSearch = new Set();
-  keysToSearch.add("Amazon Elastic Compute Cloud ($)").add("Savings Plans for AWS Compute usage ($)").add("Amazon Relational Database Service ($)").add("AWS Marketplace ($)").add("CK Discounts ($)");
-  
-  const priceData = rows;
-  const resultRows = [];
-  rows.forEach((curentServiceData)=>{
-      if(keysToSearch.has(curentServiceData.service)){
-          resultRows[curentServiceData.service] = curentServiceData;
-      }
-  })
-  console.log(resultRows);
-  
-  console.log(resultRows["Amazon Elastic Compute Cloud ($)"]["jun2025"]) ;
+  const [data, setData] = useState({});
+  const [servicesNames, setservicesNames] = useState(new Set());
+  const [availableMonths,setAvailableMonths] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const getSnowflakeData = async () => {
+      console.log("Snowflake before");
+      const res = await axiosInstance.get("/get-cost");
+      console.log("Snowflake after");
+      const responseData = res.data;
+
+      const months = responseData.map(row => row.MONTH);
+      const sortedMonths = [...new Set(months)].sort()
+      setAvailableMonths(sortedMonths);
+
+      const formattedData = {};
+      const servicesSet = new Set();
+
+      
+      responseData.forEach((row) => {
+        const service = row.TYPE;
+        const cost = parseFloat(row.TOTAL_COST);
+        const month = row.MONTH;
+
+        servicesSet.add(service);
+
+        if (!formattedData[service])
+          //AWS,RDS agr nhi h to inirialize krdo
+          formattedData[service] = {};
+
+        //AWS me Jan,Feb ki cost add krte rho
+          formattedData[service][month] =
+            (formattedData[service][month] || 0) + cost;
+      });
+
+      setData(formattedData);
+      setservicesNames(servicesSet);
+      setIsLoading(false);
+    };
+    getSnowflakeData();
+  }, []);
+
+  const chartRows = Array.from(servicesNames).map((serviceKey) => ({
+    seriesname: serviceKey,
+    data: availableMonths.map((month) => {
+      const val = (data[serviceKey] && data[serviceKey][month]) || 0;
+      
+      let correctValue = val;
+      if (val < 0 && !negativeAllowed) correctValue = 0;
+
+      return {
+        value: correctValue,
+      };
+    }),
+  }));
+
   const dataSource = {
     chart: {
       theme: "fusion",
@@ -38,85 +103,27 @@ function CostExplorerCharts({ chartType, negativeAllowed }) {
     },
     categories: [
       {
-        category: [
-          { label: "June 2025" },
-          { label: "July 2025" },
-          { label: "Aug 2025" },
-          { label: "Sep 2025" },
-          { label: "Oct 2025" },
-          { label: "Nov 2025" },
-        ],
+        category : availableMonths.map((monthKey) => {
+          const [year, month] = monthKey.split("-");
+          const dateObj = new Date(year, parseInt(month)-1);
+          const label = dateObj.toLocaleString("default", {
+            month: "long",
+            year: "numeric"
+          });
+          return { label: label}
+        })
       },
     ],
-    dataset: [
-       {
-        seriesname: "Amazon Elastic Compute Cloud",
-        data: [
-          { value: resultRows["Amazon Elastic Compute Cloud ($)"]["jun2025"] < 0 && !negativeAllowed ? 0: resultRows["Amazon Elastic Compute Cloud ($)"]["jun2025"] },
-          { value: resultRows["Amazon Elastic Compute Cloud ($)"]["jul2025"] < 0 && !negativeAllowed ? 0: resultRows["Amazon Elastic Compute Cloud ($)"]["jul2025"]},
-          { value: resultRows["Amazon Elastic Compute Cloud ($)"]["aug2025"] < 0 && !negativeAllowed ? 0: resultRows["Amazon Elastic Compute Cloud ($)"]["aug2025"]},
-          { value: resultRows["Amazon Elastic Compute Cloud ($)"]["sep2025"] < 0 && !negativeAllowed ? 0: resultRows["Amazon Elastic Compute Cloud ($)"]["sep2025"]},
-          { value: resultRows["Amazon Elastic Compute Cloud ($)"]["oct2025"] < 0 && !negativeAllowed ? 0: resultRows["Amazon Elastic Compute Cloud ($)"]["oct2025"]},
-          { value: resultRows["Amazon Elastic Compute Cloud ($)"]["nov2025"] < 0 && !negativeAllowed ? 0: resultRows["Amazon Elastic Compute Cloud ($)"]["nov2025"]},
-        ],
-      },
-       {
-        seriesname: "Savings Plan for AWS Compute Usage",
-        data: [
-          { value: resultRows["Savings Plans for AWS Compute usage ($)"]["jun2025"] < 0 && !negativeAllowed ? 0: resultRows["Savings Plans for AWS Compute usage ($)"]["jun2025"]},
-          { value: resultRows["Savings Plans for AWS Compute usage ($)"]["jul2025"] < 0 && !negativeAllowed ? 0: resultRows["Savings Plans for AWS Compute usage ($)"]["jul2025"] },
-          { value: resultRows["Savings Plans for AWS Compute usage ($)"]["aug2025"] < 0 && !negativeAllowed ? 0: resultRows["Savings Plans for AWS Compute usage ($)"]["aug2025"] },
-          { value: resultRows["Savings Plans for AWS Compute usage ($)"]["sep2025"] < 0 && !negativeAllowed ? 0: resultRows["Savings Plans for AWS Compute usage ($)"]["sep2025"] },
-          { value: resultRows["Savings Plans for AWS Compute usage ($)"]["oct2025"] < 0 && !negativeAllowed ? 0: resultRows["Savings Plans for AWS Compute usage ($)"]["oct2025"] },
-          { value: resultRows["Savings Plans for AWS Compute usage ($)"]["nov2025"] < 0 && !negativeAllowed ? 0: resultRows["Savings Plans for AWS Compute usage ($)"]["nov2025"] },
-        ],
-      },
-       {
-        seriesname: "Amazon Relational Database Service",
-        data: [
-         { value: resultRows["Amazon Relational Database Service ($)"]["jun2025"] < 0 && !negativeAllowed ? 0 : resultRows["Amazon Relational Database Service ($)"]["jun2025"]},
-          { value: resultRows["Amazon Relational Database Service ($)"]["jul2025"] < 0 && !negativeAllowed ? 0 : resultRows["Amazon Relational Database Service ($)"]["jul2025"]},
-          { value: resultRows["Amazon Relational Database Service ($)"]["aug2025"] < 0 && !negativeAllowed ? 0 : resultRows["Amazon Relational Database Service ($)"]["aug2025"]},
-          { value: resultRows["Amazon Relational Database Service ($)"]["sep2025"] < 0 && !negativeAllowed ? 0 : resultRows["Amazon Relational Database Service ($)"]["sep2025"]},
-          { value: resultRows["Amazon Relational Database Service ($)"]["oct2025"] < 0 && !negativeAllowed ? 0 : resultRows["Amazon Relational Database Service ($)"]["oct2025"]},
-          { value: resultRows["Amazon Relational Database Service ($)"]["nov2025"] < 0 && !negativeAllowed ? 0 : resultRows["Amazon Relational Database Service ($)"]["nov2025"]},
-        ],
-      },
-       {
-        seriesname: "AWS Marketplace",
-        data: [
-          { value: resultRows["AWS Marketplace ($)"]["jun2025"] < 0 && !negativeAllowed ? 0 : resultRows["AWS Marketplace ($)"]["jun2025"]},
-          { value: resultRows["AWS Marketplace ($)"]["jul2025"] < 0 && !negativeAllowed ? 0 : resultRows["AWS Marketplace ($)"]["jul2025"]},
-          { value: resultRows["AWS Marketplace ($)"]["aug2025"] < 0 && !negativeAllowed ? 0 : resultRows["AWS Marketplace ($)"]["aug2025"]},
-          { value: resultRows["AWS Marketplace ($)"]["sep2025"] < 0 && !negativeAllowed ? 0 : resultRows["AWS Marketplace ($)"]["sep2025"]},
-          { value: resultRows["AWS Marketplace ($)"]["oct2025"] < 0 && !negativeAllowed ? 0 : resultRows["AWS Marketplace ($)"]["oct2025"]},
-          { value: resultRows["AWS Marketplace ($)"]["nov2025"] < 0 && !negativeAllowed ? 0 : resultRows["AWS Marketplace ($)"]["nov2025"]},
-        ],
-      },
-      {
-        seriesname: "CK Discounts",
-        data: [
-          { value: resultRows["CK Discounts ($)"]["jun2025"] < 0 && !negativeAllowed ? 0 : resultRows["CK Discounts ($)"]["jun2025"]},
-          { value: resultRows["CK Discounts ($)"]["jul2025"] < 0 && !negativeAllowed ? 0 : resultRows["CK Discounts ($)"]["jul2025"]},
-          { value: resultRows["CK Discounts ($)"]["aug2025"] < 0 && !negativeAllowed ? 0 : resultRows["CK Discounts ($)"]["aug2025"]},
-          { value: resultRows["CK Discounts ($)"]["sep2025"] < 0 && !negativeAllowed ? 0 : resultRows["CK Discounts ($)"]["sep2025"]},
-          { value: resultRows["CK Discounts ($)"]["oct2025"] < 0 && !negativeAllowed ? 0 : resultRows["CK Discounts ($)"]["aug2025"]},
-          { value: resultRows["CK Discounts ($)"]["nov2025"] < 0 && !negativeAllowed ? 0 : resultRows["CK Discounts ($)"]["sep2025"]},
-        ],
-      },
-       {
-        seriesname: "Others",
-        data: [
-          { value: "51696.28" },
-          { value: "29800" },
-          { value: "21800" },
-          { value: "26800" },
-        ],
-      },
-    ],
-  
+    dataset: chartRows,
   };
-  
+
+  if(isLoading)
+    return (
+      <div>
+        Loading....
+      </div>
+    )
+
 
   return (
     <div>
