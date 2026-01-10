@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -30,5 +33,5 @@ public class UpdateUserRequestDTO {
     @NotBlank(message = "Role is required")
     private String role;
 
-
+    private List<Long> selectedAccounts = new ArrayList<>();
 }

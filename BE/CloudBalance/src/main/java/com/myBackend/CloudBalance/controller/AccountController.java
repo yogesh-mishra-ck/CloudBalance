@@ -25,7 +25,11 @@ public class AccountController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/me/account")
-    public ResponseEntity<CreateAccountResponseDTO> createAccount(@Valid @RequestBody CreateAccountRequestDTO createAccountRequestDTO,Authentication authentication){
+    public ResponseEntity<CreateAccountResponseDTO> createAccount(@RequestBody CreateAccountRequestDTO createAccountRequestDTO,Authentication authentication){
+
+        System.out.println(createAccountRequestDTO.getAccountId());
+        System.out.println(createAccountRequestDTO.getAccountName());
+        System.out.println(createAccountRequestDTO.getArnNumber());
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -34,22 +38,32 @@ public class AccountController {
     }
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'READ_ONLY')")
     @GetMapping("/admin/account")
     public ResponseEntity<List<GetAccountsResponseDTO>> getAllAccounts(){
+        System.out.println("Hello all accounts before") ;
         List<GetAccountsResponseDTO> accountsResponseDTOList = accountService.getAllAccounts();
-        accountsResponseDTOList.forEach(System.out::println);
+//        accountsResponseDTOList.forEach(System.out::println);
+        System.out.println("Hello all accounts after") ;
+
         return ResponseEntity.ok().body(accountsResponseDTOList);
     }
 
 
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN','READ_ONLY')")
     @GetMapping("/me/account")
     public ResponseEntity<List<GetAccountsResponseDTO>> getMyAccounts(Authentication authentication){
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         List<GetAccountsResponseDTO> accountsResponseDTOS = accountService.getAllAccountsForASpecificUser(userDetails.getUserId());
+        return ResponseEntity.ok().body(accountsResponseDTOS);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','CUSTOMER','READ_ONLY')")
+    @GetMapping("/account/{id}")
+    public ResponseEntity<List<GetAccountsResponseDTO>> getAccountsForUser(@PathVariable Long id){
+        List<GetAccountsResponseDTO> accountsResponseDTOS = accountService.getAllAccountsForASpecificUser(id);
         return ResponseEntity.ok().body(accountsResponseDTOS);
     }
 }

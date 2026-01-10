@@ -17,10 +17,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        System.out.println("Auth in handler entry point = " + auth);
-
-
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
 

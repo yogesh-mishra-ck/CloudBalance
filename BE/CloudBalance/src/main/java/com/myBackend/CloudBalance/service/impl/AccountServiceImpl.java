@@ -1,5 +1,6 @@
 package com.myBackend.CloudBalance.service.impl;
 
+import com.myBackend.CloudBalance.dto.AccountMapUserCreate;
 import com.myBackend.CloudBalance.dto.CreateAccountRequestDTO;
 import com.myBackend.CloudBalance.dto.CreateAccountResponseDTO;
 import com.myBackend.CloudBalance.dto.GetAccountsResponseDTO;
@@ -25,11 +26,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     public CreateAccountResponseDTO createAccount(CreateAccountRequestDTO createAccountRequestDTO, Long userId) {
-
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        User userAuth = (User) auth.getPrincipal();
-//        Long id = userAuth.getId();
-//        Roles roles = userAuth.getRole();
 
         //
         User user = userDetailsRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found with this id"));
@@ -77,5 +73,33 @@ public class AccountServiceImpl implements AccountService {
                         account.getAccountId(),
                         account.getArnNumber()))
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void mapAccountsToThisUser(User newUser, List<Long> ids) {
+//        List<Long> ids = accountMapUserCreate.getSelectedAccounts();
+        System.out.println("Hi");
+        List<Account> retrievedAccounts = accountRepository.findByIdIn(ids);
+
+        if (retrievedAccounts.isEmpty()) {
+            throw new RuntimeException("No accounts found for given IDs");
+        }
+
+        System.out.println(ids);
+        System.out.println(retrievedAccounts);
+        for(Account ac: retrievedAccounts){
+            ac.getUsers().add(newUser);
+//            newUser.getAccounts().add(ac);
+        }
+
+        newUser.getAccounts().clear();
+        newUser.getAccounts().addAll(retrievedAccounts);
+
+
+        System.out.println(newUser);
+
+        userDetailsRepository.save(newUser);
+
     }
 }

@@ -2,10 +2,7 @@ package com.myBackend.CloudBalance.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 
@@ -24,6 +21,7 @@ public class RefreshToken {
 
     private Instant expiryDate;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;

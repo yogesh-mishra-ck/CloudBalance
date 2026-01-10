@@ -58,13 +58,13 @@ public class SecurityConfig {
                                 .requestMatchers("/logout").permitAll()
 //                                .requestMatchers(HttpMethod.GET, "/healthy").hasAuthority(Permissions.READ.name())
 //                                .requestMatchers(HttpMethod.POST, "/healthy").hasAuthority(Permissions.WRITE.name())
-                                .requestMatchers(HttpMethod.GET, "/user").hasAnyRole(Roles.READ_ONLY.name(), Roles.ADMIN.name())
-                                .requestMatchers(HttpMethod.POST, "/user").hasAnyRole(Roles.ADMIN.name())
-                                .requestMatchers(HttpMethod.PUT, "/user/**").hasAnyRole(Roles.ADMIN.name())
+//                                .requestMatchers(HttpMethod.GET, "/user").hasAnyRole(Roles.READ_ONLY.name(), Roles.ADMIN.name())
+//                                .requestMatchers(HttpMethod.POST, "/user").hasAnyRole(Roles.ADMIN.name())
+//                                .requestMatchers(HttpMethod.PUT, "/user/**").hasAnyRole(Roles.ADMIN.name())
 
                                 //accounts
                                 .requestMatchers("/me/**").authenticated()
-                                .requestMatchers("/admin/**").hasRole(Roles.ADMIN.name())
+//                                .requestMatchers("/admin/**").hasRole(Roles.ADMIN.name())
 
 
 //

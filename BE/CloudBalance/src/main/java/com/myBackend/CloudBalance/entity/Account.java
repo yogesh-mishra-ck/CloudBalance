@@ -15,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Builder
-@ToString
+//@ToString
 public class Account {
 
     @Id
@@ -34,5 +34,6 @@ public class Account {
     //inverse side
     @ManyToMany(mappedBy = "accounts")
     @Builder.Default
+    @JsonIgnore
     private Set<User> users = new HashSet<>();
 }

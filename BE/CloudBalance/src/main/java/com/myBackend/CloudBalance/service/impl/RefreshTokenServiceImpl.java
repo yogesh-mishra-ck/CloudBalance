@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+//@Transactional
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private  final RefreshTokenRepository refreshTokenRepository;
@@ -28,8 +29,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 .token(token)
                 .expiryDate(Instant.now().plusSeconds(24*60*60))
                 .build();
+        refreshToken = refreshTokenRepository.save(refreshToken);
+        System.out.println(refreshToken);
+        return  refreshToken;
 
-        return refreshTokenRepository.save(refreshToken);
+//        return refreshTokenRepository.save(refreshToken);
     }
 
     public Optional<RefreshToken> findByToken(String token){

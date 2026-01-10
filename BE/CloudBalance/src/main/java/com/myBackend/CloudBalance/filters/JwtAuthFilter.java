@@ -5,6 +5,7 @@ import com.myBackend.CloudBalance.service.impl.CustomUserDetailsServiceImpl;
 import com.myBackend.CloudBalance.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        System.out.println("All Cookies!");
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                System.out.println("Cookie name: " + cookie.getName());
+            }
+        } else {
+            System.out.println("No cookies found");
+        }
+
         String path = request.getServletPath();
         if(path.startsWith("login") || path.startsWith("refresh")){
             filterChain.doFilter(request, response);
@@ -40,7 +52,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
-        String username = null;
+        String username;
         if(!token.isEmpty() ){
             try{
                 username = jwtUtil.extractUsername(token);

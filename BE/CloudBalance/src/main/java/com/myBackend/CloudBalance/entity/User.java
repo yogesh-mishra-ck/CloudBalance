@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString(exclude = "")
 //@Table(name = "user")
 public class User  {
 
@@ -82,6 +83,5 @@ public class User  {
         account.getUsers().add(this);
 
     }
-
 
 }

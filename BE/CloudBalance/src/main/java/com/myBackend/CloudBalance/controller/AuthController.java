@@ -1,6 +1,7 @@
 package com.myBackend.CloudBalance.controller;
 
 import com.myBackend.CloudBalance.dto.AuthRequestDTO;
+import com.myBackend.CloudBalance.dto.AuthResponseDto;
 import com.myBackend.CloudBalance.entity.RefreshToken;
 import com.myBackend.CloudBalance.entity.User;
 import com.myBackend.CloudBalance.service.impl.RefreshTokenServiceImpl;
@@ -33,78 +34,21 @@ public class AuthController {
     private final RefreshTokenServiceImpl refreshTokenService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response){
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response){
         System.out.println("Inside controller");
-
-        Authentication authentication = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(authRequestDTO.getEmail(), authRequestDTO.getPassword()) );
-        if(authentication.isAuthenticated()){
-
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getEmail());
-            User user = userService.getUser(authRequestDTO.getEmail());
-            String accessToken = jwtUtil.generateToken(authRequestDTO.getEmail(), "ROLE_"+ user.getRole().name());
-            ResponseCookie responseCookie = ResponseCookie.from("token", refreshToken.getToken())
-                    .httpOnly(true)
-                    .path("/")
-                    .maxAge(15*60)
-                    .sameSite("Strict")
-                    .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-            return ResponseEntity.ok().body(accessToken);
-        }else{
-            throw  new UsernameNotFoundException("Invalid user request");
-        }
+        return authService.login(authRequestDTO);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@CookieValue(name = "token") String refreshToken){
 
-        if(refreshToken!=null){
-            refreshTokenService.deleteByToken(refreshToken);
-        }
-
-        ResponseCookie deleteCookie = ResponseCookie.from("token", "")
-                .httpOnly(true)
-                .path("/")
-                .maxAge(0)
-                .sameSite("Strict")
-                .build();
-        return ResponseEntity.noContent().header(HttpHeaders.SET_COOKIE, deleteCookie.toString()).build();
+        return authService.logout(refreshToken);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<String> refreshToken(HttpServletRequest request, HttpServletResponse response){
-
-        Cookie[] requestCookies = request.getCookies();
-        String token = null;
-        if(requestCookies != null){
-            for(Cookie cookie : requestCookies){
-                if("token".equals(cookie.getName())){
-                    token = cookie.getValue();
-                    break;
-                }
-            }
-        }
-
-        RefreshToken refreshToken = refreshTokenService.findByToken(token).orElseThrow(()-> new RuntimeException("Refresh token is not in db"));
-        if(refreshTokenService.verifyExpiration(refreshToken)){
-            User userFound = refreshToken.getUser();
-            String accessToken = jwtUtil.generateToken(userFound.getEmail(), userFound.getRole().toString());
-
-            RefreshToken newRefreshToken = refreshTokenService.roatate(refreshToken);
-
-            ResponseCookie responseCookie = ResponseCookie.from("token", newRefreshToken.getToken())
-                    .httpOnly(true)
-                    .path("/")
-                    .maxAge(24*60*60)
-                    .sameSite("Strict")
-                    .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-
-            return ResponseEntity.ok().body(accessToken);
-        }else{
-            throw  new RuntimeException("Refresh token is not in db");
-        }
-
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "token") String token){
+        System.out.println(token);
+        return authService.refreshToken(token);
     }
 
     @GetMapping("/healthy")

@@ -4,13 +4,15 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class CreateUserRequestDTO {
-
+public class AccountMapUserCreate{
     @NotBlank(message = "First Name is required")
     private String firstName;
 
@@ -26,4 +28,8 @@ public class CreateUserRequestDTO {
 
     @NotBlank(message = "Role is required")
     private String role;
+
+
+
+    private List<Long> selectedAccounts = new ArrayList<>();
 }

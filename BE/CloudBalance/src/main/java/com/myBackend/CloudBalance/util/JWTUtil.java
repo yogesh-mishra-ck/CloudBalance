@@ -35,7 +35,7 @@ public class JWTUtil {
 //    private String SECRET = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5b2dlc2htaXNocmFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzY1OTQ4NTUyLCJleHAiOjE3NjU5NDk0NTJ9.1w3f-Vf7ldyf0wp_C0T0poo-Vw6QMTQ4KFE_5z_u01Q";
 
     private final long EXPIRATION_TIME = 1000*60*15; //15 minutes
-//    private final long EXPIRATION_TIME = 1000*60;
+//    private final long EXPIRATION_TIME = 1000*15;
 
     public String generateToken(String email, String role){
         return Jwts

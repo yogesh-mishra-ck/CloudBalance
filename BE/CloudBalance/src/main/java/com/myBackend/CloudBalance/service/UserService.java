@@ -2,6 +2,7 @@ package com.myBackend.CloudBalance.service;
 
 import com.myBackend.CloudBalance.dto.*;
 import com.myBackend.CloudBalance.entity.User;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -10,4 +11,5 @@ public interface UserService {
     public User getUser(String email);
     public CreateUserResponseDTO createUser(CreateUserRequestDTO createUserRequestDTO);
     public CreateUserResponseDTO updateUser(UpdateUserRequestDTO updateUserRequestDTO, Long userId);
+    public UserResponseDTO changeActiveStatus(Long id);
 }

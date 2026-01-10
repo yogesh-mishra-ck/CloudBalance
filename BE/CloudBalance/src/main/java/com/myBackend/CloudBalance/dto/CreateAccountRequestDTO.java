@@ -12,12 +12,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateAccountRequestDTO {
 
-    @NotBlank(message = "Account Name is required")
+//    @NotBlank(message = "Account Name is required")
     private String accountName;
 
-    @NotBlank(message = "Account ID is required")
+//    @NotBlank(message = "Account ID is required")
     private String accountId;
 
-    @NotBlank(message = "ARN Number is required")
+//    @NotBlank(message = "ARN Number is required")
     private String arnNumber;
 }

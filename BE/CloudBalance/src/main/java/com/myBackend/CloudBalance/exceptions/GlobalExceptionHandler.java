@@ -27,10 +27,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(403, "User account has been disabled"));
     }
 
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiError> handleAuthorizationDeniedException(){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(403, "You dont have sufficient permissions to perform this operation"));
+    }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneralException(Exception E){
-        System.out.println("THE EXCEPTION IS THIS"+E);
+    public ResponseEntity<ApiError> handleGeneralException(Exception e){
+        System.out.println("THE EXCEPTION IS THIS"+e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiError(500, "INTERNAL SERVER ERROR!! Something went wrong"));
     }
 }
