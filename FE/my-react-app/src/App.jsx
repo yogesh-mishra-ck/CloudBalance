@@ -19,6 +19,7 @@ import {Toaster} from "sonner";
 import Onboarding2 from './pages/Onboarding/Onboarding2'
 import Onboarding3 from './pages/Onboarding/Onboarding3'
 import Onboarding_Parent from './pages/Onboarding/Onboarding_Parent'
+import Onboarding_Accounts from './pages/Onboarding/Onboarding_Accounts'
 
 
 function App() {
@@ -38,7 +39,8 @@ function App() {
                   <Route path='add-user' element={ <AddUser/> } />
                 </Route>
                 <Route path='aws-services' element={<AwS_Services/>} />
-                <Route path='onboarding' element={<Onboarding_Parent/>} />
+                <Route path='accounts' element={<Onboarding_Parent/>} />
+                <Route path='onboarding' element={<Onboarding_Accounts/>}/>
               </Route>
             </Route>
 

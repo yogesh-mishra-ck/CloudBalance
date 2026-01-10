@@ -11,13 +11,35 @@ import Radio from "@mui/material/Radio";
 import { toast } from "sonner";
 import handleCopy from "../../components/HandleCopy/HandleCopy";
 import HandleCopy from "../../components/HandleCopy/HandleCopy";
+import axiosInstance from "../../utils/axiosInterceptor";
 
 const label = { slotProps: { input: { 'aria-label': 'Checkbox demo' } } };
 
 
-const Onboarding3 = ({ onBack }) => {
+const Onboarding3 = ({ onBack, accountForm }) => {
 
     const copyText = "ck-tuner-275595855473-hourly-cur";
+    const handleSubmit = ()=>{
+       
+        const addAccount = async ()=>{
+          try{
+            const res = await axiosInstance.post("/me/account", {
+              accountName: accountForm.accountName,
+              accountId: accountForm.accountId,
+              arnNumber: accountForm.accountARN
+            });
+            
+            if(res.status === 201){
+              console.log("New account data got submitted", res.data);
+              toast.success("Account created successfully");
+            }
+          }catch(e){
+            console.log("Error occured during account creation ", e)
+          }
+
+        }
+        addAccount();
+    }
 
 
   return (
@@ -155,7 +177,7 @@ const Onboarding3 = ({ onBack }) => {
                   </div>
                 </div>
 
-                <img src={report_Delivery_Options} alt="" className="mt-3 pl-5" />
+                <img src={report_Delivery_Options} alt="" className="mt-3 pl-5 h-170 w-200" />
               </div>
 
               <div>
@@ -179,7 +201,7 @@ const Onboarding3 = ({ onBack }) => {
               <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold" onClick={onBack}>
                 Back - Add Customer Managed Policies
               </button>
-              <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold">
+              <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer" onClick={handleSubmit}>
                 Submit
               </button>
             </div>

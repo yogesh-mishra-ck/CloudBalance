@@ -29,7 +29,7 @@ function ServicesFilter() {
                 <div className='border rounded bg-white shadow-gray-500 shadow-2xl border-gray-400 absolute top-5 left-2 h-55 w-74'>
                     <input type="text" name="" id="" className='p-2 w-68 border-gray-400 text-black mt-3 border rounded' placeholder='Search'/>
                     <div className='flex'>
-                        <select name="" id="" className='text-black mt-2 font-light text-sm ml-auto  p- '>
+                        <select name="" id="" className='text-black mt-2 font-light text-sm ml-auto  '>
                             <option value="include_only" className='hover:bg-gray-300'>Include Only</option>
                             <option value="clear_filter" className='hover:bg-gray-300'>Clear Filter</option>
                             <option value="exclude_only" className='hover:bg-gray-300'>Exclude Only</option>
@@ -60,7 +60,7 @@ function ServicesFilter() {
                     </div>
 
                     <div className='bg-blue-100 flex justify-end pr-2 gap-1.5 pt-1.5 pb-1'>
-                        <button className='px-2 py-1 text-blue-900 border rounded bg-white cursor-pointer text-sm'>Cancel</button>
+                        <button className='px-2 py-1 text-blue-900 border rounded bg-white cursor-pointer text-sm' onClick={()=>setOpen(false)}>Cancel</button>
                         <button className='px-2 py-1 text-white border rounded bg-blue-900 cursor-pointer text-sm'>Apply</button>
                     </div>
                 </div>

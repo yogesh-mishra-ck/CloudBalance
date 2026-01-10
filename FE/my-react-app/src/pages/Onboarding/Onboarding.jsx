@@ -5,11 +5,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import arnOnboard from "../../assets/arn-onboard.png";
 import Onboarding_Navbar from "../../components/Onboarding-Navbar/Onboarding_Navbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import HandleCopy from "../../components/HandleCopy/HandleCopy";
+import { useState } from "react";
 // import { useState } from "react";
 
-const Onboarding = ({ onNext }) => {
+const Onboarding = ({ onNext, accountForm, setAccountForm }) => {
+  const navigate = useNavigate();
+ 
   // const [choosenPage, setChoosenPage] = useState("A");
   const jsondata = `{
   "Version": "2012-10-17",
@@ -146,6 +149,12 @@ const Onboarding = ({ onNext }) => {
                         required
                         className="border rounded border-red-500 p-2 w-110"
                         placeholder="Enter the IAM Role ARN"
+                        onChange={(e) =>
+                          setAccountForm((prev) => ({
+                            ...prev,
+                            accountARN: e.target.value,
+                          }))
+                        }
                       />
                     </p>
                   </div>
@@ -158,6 +167,12 @@ const Onboarding = ({ onNext }) => {
                         required
                         className="border rounded border-red-500 p-2 w-110"
                         placeholder="Enter the Account ID"
+                        onChange={(e) =>
+                          setAccountForm((prev) => ({
+                            ...prev,
+                            accountId: e.target.value,
+                          }))
+                        }
                       />
                     </p>
                   </div>
@@ -172,6 +187,12 @@ const Onboarding = ({ onNext }) => {
                         required
                         className="border rounded border-red-500 p-2 w-110"
                         placeholder="Enter the Account Name"
+                        onChange={(e) =>
+                          setAccountForm((prev) => ({
+                            ...prev,
+                            accountName: e.target.value,
+                          }))
+                        }
                       />
                     </p>
                   </div>
@@ -181,12 +202,18 @@ const Onboarding = ({ onNext }) => {
           </div>
         </main>
         <footer className="mt-2 flex justify-between">
-          <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold">
+          <button
+            className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold"
+            onClick={() => navigate("/dashboard/onboarding")}
+          >
             Cancel
           </button>
 
           <div className="flex gap-1">
-            <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold">
+            <button
+              className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold"
+              onClick={() => navigate("/dashboard/onboarding")}
+            >
               Back
             </button>
             <button
