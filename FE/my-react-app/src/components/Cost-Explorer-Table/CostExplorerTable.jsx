@@ -1,116 +1,120 @@
-import React from "react";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-import { TableVirtuoso } from "react-virtuoso";
-import { rows } from "../../utils/cost_explorer_row_mockup";
+import { useSelector } from "react-redux";
 
-const columns = [
-  { width: 300, label: "Service", dataKey: "service" },
-  { width: 120, label: "Jun-2025", dataKey: "jun2025", numeric: true },
-  { width: 120, label: "Jul-2025", dataKey: "jul2025", numeric: true },
-  { width: 120, label: "Aug-2025", dataKey: "aug2025", numeric: true },
-  { width: 120, label: "Sep-2025", dataKey: "sep2025", numeric: true },
-  { width: 120, label: "Oct-2025", dataKey: "oct2025", numeric: true },
-  { width: 120, label: "Nov-2025", dataKey: "nov2025", numeric: true },
-  { width: 140, label: "Total", dataKey: "total", numeric: true },
-];
-// const mainRows = rows.filter((row) => row.service !== "Total");
-// const totalRow = rows.find((row) => row.service === "Total");
+export default function CostExplorerTable() {
+  const storeData = useSelector((state) => state.chartData);
 
-const VirtuosoTableComponents = {
-  Scroller: React.forwardRef((props, ref) => (
-    <TableContainer component={Paper} {...props} ref={ref} />
-  )),
-  Table: (props) => (
-    <Table
-      {...props}
-      sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
-    />
-  ),
-  TableHead: React.forwardRef((props, ref) => (
-    <TableHead {...props} ref={ref} />
-  )),
-  TableRow,
-  TableBody: React.forwardRef((props, ref) => (
-    <TableBody {...props} ref={ref} />
-  )),
-};
+  const type = useSelector((state) => state.groupByValue);
+  const rowType = type
+    .split("_")
+    .map((a) => a[0].toUpperCase() + a.toLowerCase().slice(1))
+    .join(" ");
+  console.log(rowType);
 
-function fixedHeaderContent() {
-  return (
-    <TableRow>
-      {columns.map((column) => (
-        <TableCell
-          key={column.dataKey}
-          variant="head"
-          align={column.numeric || false ? "right" : "left"}
-          
-          style={{ width: column.width }}
-          sx={{ backgroundColor: "background.paper" }}
-          
-        >
-          {column.label}
-        </TableCell>
-      ))}
-    </TableRow>
-  );
-}
+  console.log(storeData);
 
-function rowContent(_index, row) {
-  const isTotalRow = row.service === "Total";
+  const monthsSet = new Set(); //columns
+  Object.values(storeData).forEach(monthCost => {
+    Object.keys(monthCost).forEach(month => {
+      monthsSet.add(month);
+    })
+  })
+  
+  const months = Array.from(monthsSet);
+  const rows = Object.entries(storeData).map( ([serviceName, monthlyData]) => {
+    let totalCost = 0;
+
+    const monthCost = months.map(currentMonth => {
+      const thisMonthCost = monthlyData[currentMonth] ? monthlyData[currentMonth] : 0; 
+        totalCost+= thisMonthCost;
+        return thisMonthCost;
+    });
+
+    return {
+      serviceName,
+      monthCost,
+      totalCost
+    }
+
+  })
+  // const monthsData = Array.from(months);
+  console.log(months)
+
 
   return (
-    <React.Fragment>
-      {columns.map((column) => (
-        <TableCell
-          key={column.dataKey}
-          align={column.numeric ? "right" : "left"}
-          sx={{
-            fontWeight: column.dataKey === "service" ? "bold" : "normal",
-            fontSize: "11px",
-            color: isTotalRow
-              ? "oklch(45.7% 0.24 277.023)"
-              : column.dataKey === "service"
-              ? "black"
-              : column.dataKey === "total"
-              ? "oklch(45.7% 0.24 277.023)"
-              : undefined,
-            backgroundColor: isTotalRow
-              ? "oklch(95.1% 0.026 236.824)"
-              : undefined,
-                          // marginBottom: isTotalRow ? "100px" : ""
+    <div className="overflow-auto h-[400px]">
+      <table className="w-full  border border-gray-300 mt-2 text-sm">
+        <thead className=" rounded border-amber-600 bg-gray-200 text-sm font-bold text-gray-600">
+          <tr>
+            <th className="px-4 py-1 border-r border-gray-400 text-left">{rowType}</th>
 
-          }}
-          
-        >
-          {typeof row[column.dataKey] === "number"
-            ? row[column.dataKey].toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })
-            : row[column.dataKey]}
-        </TableCell>
-      ))}
-    </React.Fragment>
-  );
-}
+            {
+              months.map(month => (
+                <th className="px-3 py-1 border-r border-gray-400 ">{month}</th>
+              ))
+            }
 
-export default function ReactVirtualizedTable() {
-  return (
-    <Paper style={{ height: 400, width: '100%' }}>
-      <TableVirtuoso
-        data={rows}
-        components={VirtuosoTableComponents}
-        fixedHeaderContent={fixedHeaderContent}
-        itemContent={rowContent}
-      />
-    </Paper>
+            <th className="px-4 py-1 font-bold text-blue-600 border-r border-gray-400 text-right">
+              Total
+            </th>
+
+          </tr>
+        </thead>
+
+        <tbody className="">
+          {
+            rows.map(row => (
+              
+              <tr className="border-b border-gray-400">
+                <td className=" font-medium px-4 py-1 border-r border-gray-400  text-left">
+                  {row.serviceName}
+                </td>
+
+                
+                  {row.monthCost.map((cost)=>(
+                    <td className=" px-3 py-1 border-r border-gray-400 text-center">
+                      ${cost}
+                    </td>
+                  ))}
+                
+
+                <td className=" text-blue-600 font-semibold border-r border-gray-400  px-4 py-1 text-right">
+                  ${row.totalCost}
+                </td>
+              </tr>
+              
+              
+            ))
+          }
+
+
+          {
+            <tr className="border-b border-gray-400 bg-blue-50 font-bold text-blue-600">
+              <td className=" px-4 py-1 border-r border-gray-400  text-left">Total</td>
+
+              {
+                months.map((month,i) => {
+                  const thisMonthAllExpenses = rows.reduce((acc, row) => acc+(row.monthCost[i] || 0), 0);
+                  return (
+                    <td className="px-3 py-1 border-r border-gray-400 text-center">
+                      ${thisMonthAllExpenses}
+                    </td>
+                  )
+                })
+              }
+
+              {
+                <td className="text-blue-600 border-r border-gray-400  px-4 py-1 text-right">
+                  ${
+                    rows.reduce((acc, row) => acc+(row.totalCost || 0), 0)
+                  }
+
+                </td>
+                
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   );
 }

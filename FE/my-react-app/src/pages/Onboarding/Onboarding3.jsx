@@ -9,7 +9,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Button, Paper, Tooltip } from '@mui/material';
 import Radio from "@mui/material/Radio";
 import { toast } from "sonner";
-import handleCopy from "../../components/HandleCopy/HandleCopy";
 import HandleCopy from "../../components/HandleCopy/HandleCopy";
 import axiosInstance from "../../utils/axiosInterceptor";
 

@@ -1,22 +1,35 @@
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import axiosInstance from "../../utils/axiosInterceptor";
+import { useDispatch } from "react-redux";
+import { storeChartData, storeCostGroupBy } from "../../redux/action/actions";
+import { CostContextFilter } from "../../context/CostContext";
 
 const CustomDropdown = () => {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("More");
+  // const [selected, setSelected] = useState("More");
   const dropdownRef = useRef();
+  // const { setGroupBy } = useContext(CostContext);
+
+  const dispatch = useDispatch();
 
   const items = [
     "Purchase Option",
-    "API Operation",
+    "Api Operation",
     "Resource",
-    "Charge Type",
     "Availability Zone",
     "Tenancy",
     "Legal Entity",
     "Billing Entity",
   ];
+
+  // const { params } = useContext(CostContextFilter);
+  // useEffect(()=>{
+  //   console.log("Context is updating for params ", params);
+  //   return null;
+  // },[params]);
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -31,16 +44,16 @@ const CustomDropdown = () => {
 
   return (
     <div ref={dropdownRef} className="relative inline-block text-left">
-      <button 
-      className="text-blue-900 p-1.5 font-semibold cursor-pointer"
-      onClick={() => setOpen((prev) => !prev)}>
-
+      <button
+        className="text-blue-900 p-1.5 font-semibold cursor-pointer"
+        onClick={() => setOpen((prev) => !prev)}
+      >
         More
-        {
-            open ? <KeyboardArrowUpIcon fontSize="small" className="text-blue-800"/>
-            : <KeyboardArrowDownIcon fontSize="small" className="text-blue-800"/>
-        }
-
+        {open ? (
+          <KeyboardArrowUpIcon fontSize="small" className="text-blue-800" />
+        ) : (
+          <KeyboardArrowDownIcon fontSize="small" className="text-blue-800" />
+        )}
       </button>
 
       <div className="relative">
@@ -51,7 +64,19 @@ const CustomDropdown = () => {
                 key={currentItem}
                 onClick={() => {
                   setOpen(false);
-                  setSelected(currentItem);
+
+                  let [choosenGroupFirst, choosenGroupSecond] = currentItem
+                    .toUpperCase()
+                    .split(" ");
+                  if (choosenGroupSecond != null && choosenGroupSecond != "")
+                    choosenGroupFirst =
+                      choosenGroupFirst + "_" + choosenGroupSecond;
+
+                      dispatch(storeCostGroupBy(choosenGroupFirst))
+                      // setGroupBy(choosenGroupFirst);
+
+                  // onSelect(choosenGroupFirst);
+                  // setSelected(currentItem);
                 }}
                 className="text-gray-800 block w-full text-left py-1 px-4 text-sm cursor-pointer"
               >
@@ -65,4 +90,4 @@ const CustomDropdown = () => {
   );
 };
 
-export default CustomDropdown
+export default CustomDropdown;

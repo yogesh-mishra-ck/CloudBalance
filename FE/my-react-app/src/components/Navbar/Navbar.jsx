@@ -46,6 +46,8 @@ function Navbar() {
     } finally {
       dispatch(resetStore());
       localStorage.removeItem("token");
+      // setTimeout(() => {
+      // }, 0);
       navigate("/login");
     }
   };

@@ -1,4 +1,4 @@
-import { RESET_STORE, SET_LOGGEDIN_USERINFO, STORE_USER_TABLE } from "./type"
+import { RESET_STORE, SET_LOGGEDIN_USERINFO, STORE_CHART_DATA, STORE_COST_GROUPBY, STORE_USER_TABLE } from "./type"
 
 export const storeUserTable = (userData)=>{
     return {
@@ -16,5 +16,18 @@ export const loggedInUserInfo = (loggedInUser)=>{
     return {
         type: SET_LOGGEDIN_USERINFO,
         payload: {loggedInUser}
+    }
+}
+
+export const storeChartData = (chartData)=>{
+    return {
+        type: STORE_CHART_DATA,
+        payload : { chartData }
+    }
+}
+export const storeCostGroupBy  = (groupByValue)=>{
+    return {
+        type: STORE_COST_GROUPBY,
+        payload: { groupByValue }
     }
 }

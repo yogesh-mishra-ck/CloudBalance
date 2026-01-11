@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, {  useContext, useEffect, useState } from "react";
 import FusionCharts from "fusioncharts";
 import Charts from "fusioncharts/fusioncharts.charts";
 import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 import ReactFC from "react-fusioncharts";
-import { rows } from "../../utils/cost_explorer_row_mockup.js";
+// import { rows } from "../../utils/cost_explorer_row_mockup.js";
 import axiosInstance from "../../utils/axiosInterceptor.js";
+import { useDispatch, useSelector } from "react-redux";
+import { storeChartData } from "../../redux/action/actions.js";
+import { CostContextFilter } from "../../context/CostContext.jsx";
 
 Charts(FusionCharts);
 FusionTheme(FusionCharts);
 
-function CostExplorerCharts({ chartType, negativeAllowed }) {
+function CostExplorerCharts({  chartType, negativeAllowed,filterSelectionAPI }) {
   ////////
   // a
+
+  // const { groupBy, setGroupBy } = useContext(CostContext);
+
+  const groupByValue = useSelector((state) => state.groupByValue);
+
   const generateMonths = () => {
     const months = [];
     for (let i = 5; i >= 0; i--) {
@@ -33,15 +41,29 @@ function CostExplorerCharts({ chartType, negativeAllowed }) {
 
   const dynamicMonths = generateMonths();
   
-  const [data, setData] = useState({});
+  // const [data, setData] = useState({});
+  const data = useSelector((state) => state.chartData);
+  const dispatch = useDispatch();
+
   const [servicesNames, setservicesNames] = useState(new Set());
   const [availableMonths,setAvailableMonths] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  // console.log(filterSelectionAPI)
+
+  // const { params } = useContext(CostContextFilter);
+  // console.log(params.toString())
 
   useEffect(() => {
     const getSnowflakeData = async () => {
+
+      
+     
+
+
       console.log("Snowflake before");
-      const res = await axiosInstance.get("/get-cost");
+      console.log("These are the filters selected ",filterSelectionAPI)
+      // const res = await axiosInstance.get(`/get-cost?groupBy=${groupByValue}`);
+      const res = await axiosInstance.get(`/get-cost?groupBy=${groupByValue}${filterSelectionAPI}`);
       console.log("Snowflake after");
       const responseData = res.data;
 
@@ -69,12 +91,14 @@ function CostExplorerCharts({ chartType, negativeAllowed }) {
             (formattedData[service][month] || 0) + cost;
       });
 
-      setData(formattedData);
+      // setData(formattedData);
+      dispatch(storeChartData(formattedData));
+
       setservicesNames(servicesSet);
       setIsLoading(false);
     };
     getSnowflakeData();
-  }, []);
+  }, [groupByValue, dispatch, filterSelectionAPI]);
 
   const chartRows = Array.from(servicesNames).map((serviceKey) => ({
     seriesname: serviceKey,
