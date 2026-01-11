@@ -28,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
     public CreateAccountResponseDTO createAccount(CreateAccountRequestDTO createAccountRequestDTO, Long userId) {
 
         //
-        User user = userDetailsRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found with this id"));
+//        User user = userDetailsRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found with this id"));
         Account account = Account.builder()
                 .accountName(createAccountRequestDTO.getAccountName())
                 .accountId(createAccountRequestDTO.getAccountId())
@@ -37,8 +37,8 @@ public class AccountServiceImpl implements AccountService {
 
 
         accountRepository.save(account);
-        user.addAccount(account);
-        userDetailsRepository.save(user);
+//        user.addAccount(account);
+//        userDetailsRepository.save(user);
 
         return new CreateAccountResponseDTO(account.getId(), account.getAccountName());
     }

@@ -4,6 +4,8 @@ import com.myBackend.CloudBalance.dto.AuthRequestDTO;
 import com.myBackend.CloudBalance.dto.AuthResponseDto;
 import com.myBackend.CloudBalance.entity.RefreshToken;
 import com.myBackend.CloudBalance.entity.User;
+//import com.myBackend.CloudBalance.repository.SnowflakeRepository;
+import com.myBackend.CloudBalance.repository.SnowflakeRepository;
 import com.myBackend.CloudBalance.service.impl.RefreshTokenServiceImpl;
 import com.myBackend.CloudBalance.service.impl.AuthServiceImpl;
 import com.myBackend.CloudBalance.service.impl.UserServiceImpl;
@@ -23,6 +25,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -32,6 +37,7 @@ public class AuthController {
     private final UserServiceImpl userService;
     private final AuthServiceImpl authService;
     private final RefreshTokenServiceImpl refreshTokenService;
+    private final SnowflakeRepository snowflakeRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response){
@@ -62,4 +68,9 @@ public class AuthController {
     public String checkHealthPost(){
         return "POST ==> healthy";
     }
+
+//    @GetMapping("/snowflake")
+//    public List<Map<String, Object>> checkSnowflake(){
+//        return snowflakeRepository.getCost();
+//    }
 }

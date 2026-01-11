@@ -56,6 +56,10 @@ public class SecurityConfig {
                                 .requestMatchers("/login").permitAll()
                                 .requestMatchers("/refresh").permitAll()
                                 .requestMatchers("/logout").permitAll()
+
+                                .requestMatchers("/snowflake").permitAll()
+                                .requestMatchers("/get-cost").permitAll()
+                                .requestMatchers("/getAllFilters").permitAll()
 //                                .requestMatchers(HttpMethod.GET, "/healthy").hasAuthority(Permissions.READ.name())
 //                                .requestMatchers(HttpMethod.POST, "/healthy").hasAuthority(Permissions.WRITE.name())
 //                                .requestMatchers(HttpMethod.GET, "/user").hasAnyRole(Roles.READ_ONLY.name(), Roles.ADMIN.name())

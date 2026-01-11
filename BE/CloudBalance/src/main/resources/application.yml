@@ -1,5 +1,5 @@
-#spring:
-#  security:
-#    user:
-#      name: "yogesh"
-#      password: root
+logging:
+  level:
+    net.snowflake.client: OFF
+    net.snowflake.client.jdbc: OFF
+    net.snowflake.client.core: OFF
