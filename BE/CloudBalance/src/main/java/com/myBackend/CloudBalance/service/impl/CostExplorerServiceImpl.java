@@ -88,11 +88,11 @@ public class CostExplorerServiceImpl implements CostExplorerService {
 
         if(startDate!=null){
             queryBuilder.append("AND BILL_DATE >= :startDate ");
-            parameters.put("startDate", startDate);
+            parameters.put("startDate", startDate.toString());
         }
         if(endDate!=null){
             queryBuilder.append("AND BILL_DATE < :endDate");
-            parameters.put("endDate", endDate);
+            parameters.put("endDate", endDate.toString());
         }
 
         queryBuilder.append("GROUP BY ").append(groupBy).append(" ,MONTH");

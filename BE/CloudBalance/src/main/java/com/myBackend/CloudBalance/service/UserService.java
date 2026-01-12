@@ -12,4 +12,6 @@ public interface UserService {
     public CreateUserResponseDTO createUser(CreateUserRequestDTO createUserRequestDTO);
     public CreateUserResponseDTO updateUser(UpdateUserRequestDTO updateUserRequestDTO, Long userId);
     public UserResponseDTO changeActiveStatus(Long id);
+
+    public LoggedInUserDTO getLoggedInUserDetails();
 }

@@ -143,4 +143,22 @@ public class UserServiceImpl implements UserService {
         userDetailsRepository.save(user);
         return new UserResponseDTO(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), user.isUserActive(), user.getLastLogin(), user.getRole());
     }
+
+    @Override
+    public LoggedInUserDTO getLoggedInUserDetails() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null || !authentication.isAuthenticated())
+            throw new UsernameNotFoundException("User not in session");
+
+
+        CustomUserDetails customUserDetails = (CustomUserDetails)authentication.getPrincipal();
+        String username = customUserDetails.getUsername();
+
+        User user = userDetailsRepository.findByEmail(username).orElseThrow(()-> new RuntimeException("User not found in db"));
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        String role = user.getRole().toString();
+        Long id = user.getId();
+        return new LoggedInUserDTO(firstName,lastName,role,id);
+    }
 }

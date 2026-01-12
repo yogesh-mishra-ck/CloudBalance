@@ -4,6 +4,7 @@ import com.myBackend.CloudBalance.service.CostExplorerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ public class CostExplorerController {
 
     private final CostExplorerService costExplorerService;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     @GetMapping("/get-cost")
     public ResponseEntity<?> getCost(
             @RequestParam(defaultValue = "SERVICE") String groupBy,
@@ -38,14 +40,19 @@ public class CostExplorerController {
 
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate
+
+//            @RequestParam(required = false) String accountIdSelected
             ){
         System.out.println("In cost exp controller");
         return ResponseEntity.ok().body(costExplorerService.getCost(groupBy, service,instanceType,accountId,usageType,platform,region,purchaseOption,usageTypeGroup,apiOperation,resource,availibilityZone,tenancy,legalEntity,billingEntity,startDate,endDate));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     @GetMapping("/getAllFilters")
     public ResponseEntity<?> getAllFilters(@RequestParam String allFilterType){
         System.out.println("Filter chosen "+allFilterType);
         return ResponseEntity.ok().body(costExplorerService.getAllFilterType(allFilterType));
     }
+
+
 }
