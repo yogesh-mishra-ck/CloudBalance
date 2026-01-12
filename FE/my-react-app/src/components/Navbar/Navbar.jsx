@@ -10,7 +10,7 @@ import { SidebarContext } from "../UserContext/SidebarContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { resetStore } from "../../redux/action/actions";
+import { resetStore, storeAccountIdSelected } from "../../redux/action/actions";
 import axiosInstance from "../../utils/axiosInterceptor";
 
 function Navbar() {
@@ -26,6 +26,7 @@ function Navbar() {
   const { isCollapsed, setIsCollapsed } = useContext(SidebarContext);
   const [accountsThisUser, setAccountsThisUser] = useState([]);
   const [showUserAccounts, setShowUserAccounts] = useState(false);
+  const [selectedAccountUI, setSelectedAccountUI] = useState("");
 
   const handleOnClick = () => {
     setIsCollapsed(!isCollapsed);
@@ -92,6 +93,13 @@ function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleAccountClicked = (account)=>{
+    console.log(account.accountId);
+    dispatch(storeAccountIdSelected(account.accountId))
+    setSelectedAccountUI(account.accountName)
+    setShowUserAccounts(false)
+   }
+
   return (
     <div>
       <nav className="flex w-full h-16 p-3 gap-5 shadow-lg-300">
@@ -114,14 +122,18 @@ function Navbar() {
                   className="p-2 ml-3 cursor-pointer border rounded bg-white"
                   onClick={handleShowAccounts}
                 >
-                  {accountsThisUser[0]?.accountName}
+                  {
+                  selectedAccountUI == ""
+                  ? accountsThisUser[0]?.accountName
+                  : selectedAccountUI
+                  }
                 </button>
               </div>
 
               {showUserAccounts && (
                 <ul className="absolute border mt-1.5 rounded w-48 z-50 bg-white shadow-lg shadow-gray-400">
                   {accountsThisUser.map((account) => (
-                    <li key={account.id} className="px-3 py-1">
+                    <li key={account.id} className="px-3 py-1 hover:bg-blue-200 cursor-pointer" onClick={() => handleAccountClicked(account)}>
                       {account.accountName}
                     </li>
                   ))}

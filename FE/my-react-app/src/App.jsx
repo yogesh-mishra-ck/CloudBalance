@@ -1,4 +1,4 @@
-import { Children } from "react";
+import { Children, useEffect } from "react";
 
 import "./App.css";
 import { UserContext } from "./components/UserContext/UserContext";
@@ -22,8 +22,24 @@ import Onboarding_Parent from "./pages/Onboarding/Onboarding_Parent";
 import Onboarding_Accounts from "./pages/Onboarding/Onboarding_Accounts";
 import { CostContextFilter } from "./context/CostContext";
 import { CostExplorerProvider } from "./pages/CostExplorer/CostExplorerProvider";
+import { useDispatch, useSelector } from "react-redux";
+import { loggedInUserInfo } from "./redux/action/actions";
 
 function App() {
+
+  const dispatch = useDispatch();
+  const userInfo = useSelector(state => state.loggedInUser);
+
+  useEffect(()=>{
+    const token = localStorage.getItem("token");
+    const userInfo = localStorage.getItem("userinfo");
+
+    if(token && userInfo){
+      dispatch(loggedInUserInfo(userInfo))
+    }
+
+  },[userInfo,dispatch]);
+
   return (
     <>
       <Toaster richColors />

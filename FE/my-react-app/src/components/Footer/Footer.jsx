@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <div>
         <footer className= {`
-          ${isCollapsed ? 'max-w-[96%]' : 'max-w-[89%]' }
+          ${isCollapsed ? 'max-w-[96%]' : 'max-w-[86%]' }
           w-full mx-auto flex justify-between items-start border-2 px-5 bg-gray-100 text-shadow-lg absolute bottom-0 rounded-xs transition-all duration-300 ease-in-out
         `}
          >

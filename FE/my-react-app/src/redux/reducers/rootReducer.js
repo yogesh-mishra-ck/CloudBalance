@@ -1,6 +1,6 @@
 
 // import { loggedInUserInfo } from "../action/actions"
-import { RESET_STORE, SET_LOGGEDIN_USERINFO, STORE_CHART_DATA, STORE_COST_GROUPBY, STORE_USER_TABLE } from "../action/type"
+import { RESET_STORE, SET_LOGGEDIN_USERINFO, STORE_ACCOUNT_ID_SELECTED, STORE_CHART_DATA, STORE_COST_GROUPBY, STORE_USER_TABLE } from "../action/type"
 
 const initialState = {
     users: [],
@@ -11,7 +11,8 @@ const initialState = {
         id:""
     },
     chartData:{},
-    groupByValue: "SERVICE"
+    groupByValue: "SERVICE",
+    accountId: ""
 }
 export const RootReducer = (state = initialState, action)=>{
     switch(action.type){
@@ -45,6 +46,12 @@ export const RootReducer = (state = initialState, action)=>{
             return {
                 ...state,
                 groupByValue: action.payload.groupByValue
+            }
+
+        case STORE_ACCOUNT_ID_SELECTED:
+            return {
+                ...state,
+                accountId: action.payload.accountId
             }
         default:
             return state;

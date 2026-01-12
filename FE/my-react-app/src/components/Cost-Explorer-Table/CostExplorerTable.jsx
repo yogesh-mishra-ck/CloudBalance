@@ -41,7 +41,7 @@ export default function CostExplorerTable() {
 
 
   return (
-    <div className="overflow-auto h-[400px]">
+    <div className="">
       <table className="w-full  border border-gray-300 mt-2 text-sm">
         <thead className=" rounded border-amber-600 bg-gray-200 text-sm font-bold text-gray-600">
           <tr>

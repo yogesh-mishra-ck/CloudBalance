@@ -13,10 +13,8 @@ Charts(FusionCharts);
 FusionTheme(FusionCharts);
 
 function CostExplorerCharts({  chartType, negativeAllowed,filterSelectionAPI }) {
-  ////////
-  // a
 
-  // const { groupBy, setGroupBy } = useContext(CostContext);
+
 
   const groupByValue = useSelector((state) => state.groupByValue);
 
@@ -41,7 +39,6 @@ function CostExplorerCharts({  chartType, negativeAllowed,filterSelectionAPI }) 
 
   const dynamicMonths = generateMonths();
   
-  // const [data, setData] = useState({});
   const data = useSelector((state) => state.chartData);
   const dispatch = useDispatch();
 
@@ -49,21 +46,18 @@ function CostExplorerCharts({  chartType, negativeAllowed,filterSelectionAPI }) 
   const [availableMonths,setAvailableMonths] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   // console.log(filterSelectionAPI)
-
-  // const { params } = useContext(CostContextFilter);
-  // console.log(params.toString())
+  // const [accountSelected, setAccountSelected] = useState("") //contains account-id
+  const accountIdSelected = useSelector( (state) => state.accountId);
 
   useEffect(() => {
     const getSnowflakeData = async () => {
 
       
-     
-
 
       console.log("Snowflake before");
       console.log("These are the filters selected ",filterSelectionAPI)
       // const res = await axiosInstance.get(`/get-cost?groupBy=${groupByValue}`);
-      const res = await axiosInstance.get(`/get-cost?groupBy=${groupByValue}${filterSelectionAPI}`);
+      const res = await axiosInstance.get(`/get-cost?groupBy=${groupByValue}${filterSelectionAPI}&accountId=${accountIdSelected}`);
       console.log("Snowflake after");
       const responseData = res.data;
 
@@ -98,7 +92,7 @@ function CostExplorerCharts({  chartType, negativeAllowed,filterSelectionAPI }) 
       setIsLoading(false);
     };
     getSnowflakeData();
-  }, [groupByValue, dispatch, filterSelectionAPI]);
+  }, [groupByValue, dispatch, filterSelectionAPI, accountIdSelected]);
 
   const chartRows = Array.from(servicesNames).map((serviceKey) => ({
     seriesname: serviceKey,
