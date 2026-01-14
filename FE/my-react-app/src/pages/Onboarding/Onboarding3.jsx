@@ -11,12 +11,14 @@ import Radio from "@mui/material/Radio";
 import { toast } from "sonner";
 import HandleCopy from "../../components/HandleCopy/HandleCopy";
 import axiosInstance from "../../utils/axiosInterceptor";
+import { useNavigate } from "react-router-dom";
 
 const label = { slotProps: { input: { 'aria-label': 'Checkbox demo' } } };
 
 
 const Onboarding3 = ({ onBack, accountForm }) => {
 
+  const navigate = useNavigate();
     const copyText = "ck-tuner-275595855473-hourly-cur";
     const handleSubmit = ()=>{
        
@@ -33,7 +35,8 @@ const Onboarding3 = ({ onBack, accountForm }) => {
               toast.success("Account created successfully");
             }
           }catch(e){
-            console.log("Error occured during account creation ", e)
+            console.error(e);
+            toast.error("Error occured during account creation")
           }
 
         }
@@ -192,12 +195,12 @@ const Onboarding3 = ({ onBack, accountForm }) => {
             </div>
           </main>
           <footer className="mt-2 flex justify-between ml-5 mb-9">
-            <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold">
+            <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer" onClick={() => navigate("/dashboard/onboarding")}>
               Cancel
             </button>
 
             <div className="flex gap-1">
-              <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold" onClick={onBack}>
+              <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer" onClick={onBack}>
                 Back - Add Customer Managed Policies
               </button>
               <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer" onClick={handleSubmit}>

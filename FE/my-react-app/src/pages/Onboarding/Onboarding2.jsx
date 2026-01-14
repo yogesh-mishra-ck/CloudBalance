@@ -3,9 +3,11 @@ import Onboarding_Navbar from "../../components/Onboarding-Navbar/Onboarding_Nav
 import arnOnboard from "../../assets/arn-onboard.png";
 import onboardingImage2 from "../../assets/onboarding-img-2.png";
 import ck_Tuner_Role from "../../assets/ck-tuner-role_.png";
+import { useNavigate } from "react-router-dom";
 
 
 const Onboarding2 = ({ onBack, onNext }) => {
+  const navigate = useNavigate();
   return (
     <div>
       <Onboarding_Navbar currentPage={2} />
@@ -64,15 +66,15 @@ const Onboarding2 = ({ onBack, onNext }) => {
             </div>
           </main>
           <footer className="mt-2 flex justify-between ml-5 mb-9">
-            <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold">
+            <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer" onClick={() => navigate("/dashboard/onboarding")}>
               Cancel
             </button>
 
             <div className="flex gap-1">
-                 <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold" onClick={onBack}>
+                 <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer" onClick={onBack}>
                 Back - Create an IAM Role
                 </button>
-                <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold" onClick={onNext}>
+                <button className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer" onClick={onNext}>
                 Next - Create CUR
                 </button>
             </div>

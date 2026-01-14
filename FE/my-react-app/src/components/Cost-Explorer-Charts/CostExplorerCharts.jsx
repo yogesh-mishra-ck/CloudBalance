@@ -1,4 +1,4 @@
-import React, {  useContext, useEffect, useState } from "react";
+import React, {   useEffect, useState } from "react";
 import FusionCharts from "fusioncharts";
 import Charts from "fusioncharts/fusioncharts.charts";
 import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
@@ -8,6 +8,7 @@ import axiosInstance from "../../utils/axiosInterceptor.js";
 import { useDispatch, useSelector } from "react-redux";
 import { storeChartData } from "../../redux/action/actions.js";
 import { CostContextFilter } from "../../context/CostContext.jsx";
+import { toast } from "sonner";
 
 Charts(FusionCharts);
 FusionTheme(FusionCharts);
@@ -48,49 +49,57 @@ function CostExplorerCharts({  chartType, negativeAllowed,filterSelectionAPI }) 
   // console.log(filterSelectionAPI)
   // const [accountSelected, setAccountSelected] = useState("") //contains account-id
   const accountIdSelected = useSelector( (state) => state.accountId);
+  console.log("Account id ", accountIdSelected)
 
   useEffect(() => {
     const getSnowflakeData = async () => {
 
-      
-
-      console.log("Snowflake before");
-      console.log("These are the filters selected ",filterSelectionAPI)
-      // const res = await axiosInstance.get(`/get-cost?groupBy=${groupByValue}`);
-      const res = await axiosInstance.get(`/get-cost?groupBy=${groupByValue}${filterSelectionAPI}&accountId=${accountIdSelected}`);
-      console.log("Snowflake after");
-      const responseData = res.data;
-
-      const months = responseData.map(row => row.MONTH);
-      const sortedMonths = [...new Set(months)].sort()
-      setAvailableMonths(sortedMonths);
-
-      const formattedData = {};
-      const servicesSet = new Set();
-
-      
-      responseData.forEach((row) => {
-        const service = row.TYPE;
-        const cost = parseFloat(row.TOTAL_COST);
-        const month = row.MONTH;
-
-        servicesSet.add(service);
-
-        if (!formattedData[service])
-          //AWS,RDS agr nhi h to inirialize krdo
-          formattedData[service] = {};
-
-        //AWS me Jan,Feb ki cost add krte rho
-          formattedData[service][month] =
-            (formattedData[service][month] || 0) + cost;
-      });
-
-      // setData(formattedData);
-      dispatch(storeChartData(formattedData));
-
-      setservicesNames(servicesSet);
-      setIsLoading(false);
-    };
+      try{
+        
+              console.log("Snowflake before");
+              console.log("These are the filters selected ",filterSelectionAPI)
+              // const res = await axiosInstance.get(`/get-cost?groupBy=${groupByValue}`);
+              const urlj = `/get-cost?groupBy=${groupByValue}${filterSelectionAPI}&accountId=${accountIdSelected}`;
+              console.log("Url is ",urlj)
+              const res = await axiosInstance.get(`/get-cost?groupBy=${groupByValue}${filterSelectionAPI}&accountId=${accountIdSelected}`);
+              console.log("Snowflake after");
+              const responseData = res.data;
+        
+              const months = responseData.map(row => row.MONTH);
+              const sortedMonths = [...new Set(months)].sort()
+              setAvailableMonths(sortedMonths);
+        
+              const formattedData = {};
+              const servicesSet = new Set();
+        
+              
+              responseData.forEach((row) => {
+                const service = row.TYPE;
+                const cost = parseFloat(row.TOTAL_COST);
+                const month = row.MONTH;
+        
+                servicesSet.add(service);
+        
+                if (!formattedData[service])
+                  //AWS,RDS agr nhi h to inirialize krdo
+                  formattedData[service] = {};
+        
+                //AWS me Jan,Feb ki cost add krte rho
+                  formattedData[service][month] =
+                    (formattedData[service][month] || 0) + cost;
+              });
+        
+              // setData(formattedData);
+              dispatch(storeChartData(formattedData));
+        
+              setservicesNames(servicesSet);
+              setIsLoading(false);
+            }catch(e){
+              console.error(e);
+              toast.error("Error occured during fetching of chart data")
+            }
+        
+      }
     getSnowflakeData();
   }, [groupByValue, dispatch, filterSelectionAPI, accountIdSelected]);
 

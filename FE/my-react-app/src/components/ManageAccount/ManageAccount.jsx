@@ -10,14 +10,20 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 export default function ManageAccount({selectedAccounts, setSelectedAccounts}) {
 
   const [allAccounts, setAllAccounts] = useState([]);
+  // const [showAccounts, setShowAccounts] = useState([]);
 //   const [selectedAccounts, setSelectedAccounts] = useState(new Map());
 
   useEffect(() => {
     console.log("inside effect");
     const fn = async () => {
-      const res = await axiosInstance.get("/admin/account");
-      console.log(res.data);
-      setAllAccounts(res.data);
+      try{
+        const res = await axiosInstance.get("/admin/account");
+        console.log(res.data);
+        setAllAccounts(res.data);
+        // setShowAccounts(res.data);
+      }catch(e){
+        console.error(e);
+      }
     };
     fn();
   }, []);
@@ -40,10 +46,11 @@ export default function ManageAccount({selectedAccounts, setSelectedAccounts}) {
       <p className="text-2xl my-5">Manage Account ID(s)</p>
       <main className="flex gap-3">
         {/* left */}
-        <div className="border border-gray-500 rounded">
+        <div className="border-2 border-gray-600 rounded w-95">
           <nav className="flex gap-10 bg-sky-100 px-3 py-2">
             <p className="font-bold">Choose Account IDs to Associate</p>
-            <p className="text-blue-700">10952 Available</p>
+            <p className="text-blue-700">{ allAccounts.length}</p>
+
           </nav>
 
           <div className="flex gap-2 p-2 items-center">
@@ -54,6 +61,9 @@ export default function ManageAccount({selectedAccounts, setSelectedAccounts}) {
               type="text"
               placeholder="Search"
               className=" rounded p-1 border-gray-300 w-full mx-1.5"
+              // onChange={(e)=>{
+              //     setAllAccounts()
+              // }}
             />
           </div>
 
@@ -71,7 +81,7 @@ export default function ManageAccount({selectedAccounts, setSelectedAccounts}) {
 
 
 
-                  <div className="flex">
+                  <div className="flex items-center gap-2">
                     <p>( {account.accountName} )</p>
                     <p className="text-sm">{account.accountId}</p>
                   </div>
@@ -91,10 +101,10 @@ export default function ManageAccount({selectedAccounts, setSelectedAccounts}) {
 
         {/* right */}
 
-        <div className="border border-gray-500 rounded">
+        <div className="border-2 border-gray-500 rounded ">
           <nav className="flex gap-10 bg-sky-100 px-3 py-2">
-            <p className="font-bold">Choose Account IDs to Associate</p>
-            <p className="text-blue-700">10952 Available</p>
+            <p className="font-bold">Choose Account IDs to Disassociate</p>
+            <p className="text-blue-700">{selectedAccounts.size}</p>
           </nav>
 
           {selectedAccounts.size <= 0 ? (
@@ -117,7 +127,7 @@ export default function ManageAccount({selectedAccounts, setSelectedAccounts}) {
                     className="flex font-bold h-7 mb-1.5 gap-1.5 text-gray-700 cursor-pointer"
                     onClick={() => toggleAccountSelection(account)}
                   >
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                       <p>({account.accountName})</p>
                       <p className="text-sm">{account.accountId}</p>
                     </div>

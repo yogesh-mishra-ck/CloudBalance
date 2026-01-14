@@ -39,6 +39,15 @@ export default function CostExplorerTable() {
   // const monthsData = Array.from(months);
   console.log(months)
 
+  const convertYearMonthStructure = (month)=>{
+    const [year, monthNumber] = month.split("-");
+    const date = new Date(year, Number(monthNumber)-1);
+    return date.toLocaleString("en-US", {
+      month: "short",
+      year: "numeric"
+    })
+  }
+
 
   return (
     <div className="">
@@ -49,7 +58,7 @@ export default function CostExplorerTable() {
 
             {
               months.map(month => (
-                <th className="px-3 py-1 border-r border-gray-400 ">{month}</th>
+                <th className="px-3 py-1 border-r border-gray-400 ">{convertYearMonthStructure(month)}</th>
               ))
             }
 
@@ -103,7 +112,7 @@ export default function CostExplorerTable() {
               }
 
               {
-                <td className="text-blue-600 border-r border-gray-400  px-4 py-1 text-right">
+                <td className="text-blue-600 border-r border-gray-400 sticky px-4 py-1 text-right">
                   ${
                     rows.reduce((acc, row) => acc+(row.totalCost || 0), 0)
                   }

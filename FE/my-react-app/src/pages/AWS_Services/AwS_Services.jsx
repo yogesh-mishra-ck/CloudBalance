@@ -10,13 +10,9 @@ const AwS_Services = () => {
   const asgData = asg_mock;
 
   const [selectedServiceData, setSelectedServiceData] = useState(ec2Data);
-  // useEffect(()=>{
-
-  // },[selectedService]);
 
   return (
-    <div>
-      <div>navbar</div>
+    <div className="h-234">
       <div className="flex mt-2 justify-center items-center">
         <div className="flex gap-2">
           <button className="border py-2 px-5.5 text-blue-800 border-blue-400 bg-blue-100 cursor-pointer" onClick={()=>setSelectedServiceData(ec2Data)}>

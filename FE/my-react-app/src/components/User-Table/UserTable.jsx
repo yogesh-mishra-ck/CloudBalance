@@ -5,17 +5,17 @@ import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import axios from "axios";
 import { storeUserTable } from "../../redux/action/actions";
 import { Navigate, useNavigate } from "react-router-dom";
-import api from "../../utils/axiosInterceptor";
 import axiosInstance from "../../utils/axiosInterceptor";
+import { toast } from "sonner";
 // import { store } from "../../redux/store/store";
 // import { toast } from "sonner";
 
 function UserTable() {
   // const data = users;
   const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState(true);
   const [localData, setLocalData] = useState([]);
   const [hasFetchError, setHasFetchError] = useState(false);
@@ -25,6 +25,8 @@ function UserTable() {
   const dispatch = useDispatch();
 
   const handleEditClick = (user) => {
+    if(loggedInUser.role!=="ADMIN")
+      return;
     navigate("/dashboard/user-management/add-user", {
       state: { user, isEditMode: true },
     });
@@ -41,23 +43,8 @@ function UserTable() {
       console.log("Fetching data from api...");
 
       try {
-        const token = localStorage.getItem("token");
-        const res = await axiosInstance.get(
-          "/user"
+        const res = await axiosInstance.get("/user");
 
-          // headers: {
-          //   Authorization: `Bearer ${token}`
-          // }
-        );
-        // const getCookie = (name) => {
-        //   return document.cookie
-        //     .split('; ')
-        //     .find(row => row.startsWith(name + '='))
-        //     ?.split('=')[1];
-        // };
-
-        // const refreshToken = getCookie('token');
-        // console.log("token is " , refreshToken)
         console.log("user table");
         console.log(res);
 
@@ -68,7 +55,7 @@ function UserTable() {
         setIsLoading(false);
         dispatch(storeUserTable(retrivedData));
       } catch (error) {
-        console.log("Error during fetching data" + error);
+        console.error("Error during fetching data" + error);
 
         setHasFetchError(true);
         setIsLoading(false);
@@ -79,29 +66,36 @@ function UserTable() {
 
   const toggleStatus = (activeBefore, id) => {
     const changeActiveStatus = async () => {
-      // console.log(activeBefore);
-      const res = await axiosInstance.put(`/user/${id}/change-status`);
-      const data = res.data;
-      console.log(data);
-      // console.log(data.isActive);
-      // console.log("yo boy")
+      try {
+        const res = await axiosInstance.put(`/user/${id}/change-status`);
+        const data = res.data;
+        console.log(data);
 
-      setLocalData((prev) => {
-        const updated = prev.map((user) =>
-          user.id === data.id ? { ...user, userActive: data.userActive } : user
+        setLocalData((prev) => {
+          const updated = prev.map((user) =>
+            user.id === data.id
+              ? { ...user, userActive: data.userActive }
+              : user
+          );
+
+          dispatch(storeUserTable(updated));
+          return updated;
+        });
+        if (res.status == 200)
+          toast.success("User Status has been changed successfully");
+      } catch (e) {
+        //rollback
+        setLocalData((prev) =>
+          prev.map((user) =>
+            user.id === id ? { ...user, userActive: activeBefore } : user
+          )
         );
 
-        dispatch(storeUserTable(updated));
-        return updated;
-      });
+        console.error(e);
+        toast.error("Request to change User Status failed");
+      }
     };
     changeActiveStatus();
-
-    // const updatedData = localData.map((user) =>
-    //   user.id === id ? { ...user, isActive: !user.isActive } : { ...user }
-    // );
-    // setLocalData(updatedData);
-    // dispatch(storeUserTable(updatedData));
   };
 
   {
@@ -125,70 +119,65 @@ function UserTable() {
     }
 
     return (
-      <main className="flex-1 overflow-y-auto ">
-        <table className="w-full max-w-screen mx-auto border-collapse mb-3">
-          <thead>
-            <tr
-              className="[&_th]:bg-[#f4f6f8] [&_th]:text-gray-700 
-                     [&_th]:px-4 [&_th]:py-2 [&_th]:border-b 
-                     [&_th]:border-gray-300 sticky top-0"
-            >
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Email ID</th>
-              <th>Roles</th>
-              <th>Last Login</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {localData.map((currentUser, idx) => (
+      <main className="flex-1 overflow-y-auto w-300 border rounded border-gray-300">
+        <div className="overflow-y-auto h-225">
+          <table className="w-full max-w-screen mx-auto border-collapse mb-3">
+            <thead>
               <tr
-                key={currentUser.id}
-                className="[&_td]:bg-zinc-50 [&_td]:px-4 
-                       [&_td]:py-3 [&_td]:border-b [&_td]:border-gray-200"
+                className="[&_th]:bg-[#f4f6f8] [&_th]:text-gray-700 
+                      [&_th]:px-4 [&_th]:py-2 [&_th]:border-b 
+                      [&_th]:border-gray-300 sticky top-0"
               >
-                <td>{currentUser.firstName}</td>
-                <td>{currentUser.lastName}</td>
-                <td>{currentUser.email}</td>
-                <td>{currentUser.role}</td>
-                <td>{new Date(currentUser.lastLogin).toLocaleString()}</td>
-                <td className="flex items-center gap-4">
-                  <div
-                    onClick={() => toggleStatus(currentUser.userActive, currentUser.id)}
-                    className="cursor-pointer flex"
-                  >
-                    {currentUser.userActive ? (
-                      <ToggleOnIcon
-                        fontSize="large"
-                        className="text-blue-500"
-                      />
-                    ) : (
-                      <ToggleOffIcon
-                        fontSize="large"
-                        className="text-gray-500"
-                      />
-                    )}
-                  </div>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email ID</th>
+                <th>Roles</th>
+                <th>Last Login</th>
+                {/* {loggedInUser.role==='ADMIN' && (
+                  <th>Actions</th>
 
-                  {
-                    //logged in hu to edit option visible h
-                    //admin dusre admin ko edit nhi kr skta to
-                    //loggedin nhi hu aur admin bhi nhi hu to edit kr skta
-                    (currentUser.id == loggedInUser.id ||
-                      (currentUser.id !== loggedInUser.id &&
-                        currentUser.role !== "ADMIN")) && (
-                      <div onClick={() => handleEditClick(currentUser)}>
-                        <EditIcon className="cursor-pointer" />
-                      </div>
-                    )
-                  }
-                </td>
+                )} */}
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {localData.map((currentUser) => (
+                <tr
+                  key={currentUser.id}
+                  className="[&_td]:bg-zinc-50 [&_td]:px-4 
+                        [&_td]:py-3 [&_td]:border-b [&_td]:border-gray-200"
+                >
+                  <td>{currentUser.firstName}</td>
+                  <td>{currentUser.lastName}</td>
+                  <td>{currentUser.email}</td>
+                  <td>{currentUser.role}</td>
+                  <td>{new Date(currentUser.lastLogin).toLocaleString()}</td>
+                  {/* <td className="flex items-center gap-4"> */}
+                  
+                    <td className={`flex items-center gap-4 ` }>
+                      
+                      <div onClick={() => toggleStatus(currentUser.userActive, currentUser.id)} className={` flex ${loggedInUser.role!="ADMIN" ? "cursor-not-allowed" : "cursor-pointer"}`}>
+                        {currentUser.userActive ? (
+                          <ToggleOnIcon fontSize="large" className="text-blue-500" />
+                        ) : (
+                          <ToggleOffIcon fontSize="large" className="text-gray-500" />
+                        )}
+                      </div>
+
+                      
+                      <div onClick={() => handleEditClick(currentUser)}>
+                        <EditIcon className={` ${loggedInUser.role!="ADMIN" ? "cursor-not-allowed" : "cursor-pointer"}`} />
+                      </div>
+                    </td>
+                  {/* {loggedInUser.role === "ADMIN" && (
+                  )} */}
+                {/* </td> */}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </main>
     );
   }

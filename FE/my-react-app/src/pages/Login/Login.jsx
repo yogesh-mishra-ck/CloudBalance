@@ -7,7 +7,9 @@ import { Snackbar } from "@mui/material";
 import axios, { Axios } from "axios";
 import { useDispatch } from "react-redux";
 import { SET_LOGGEDIN_USERINFO } from "../../redux/action/type";
-import { loggedInUserInfo } from "../../redux/action/actions";
+import { loggedInUserInfo, storeAccountIdSelected } from "../../redux/action/actions";
+import axiosInstance from "../../utils/axiosInterceptor";
+import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,8 +19,8 @@ export default function Login() {
     password: "pass",
   });
 
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  // const [errorMessage, setErrorMessage] = useState("");
+  // const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -34,7 +36,7 @@ export default function Login() {
     e.preventDefault();
     // console.log(first)
     console.log(formData);
-    setErrorMessage("");
+    // setErrorMessage("");
 
     // const isValid = validateInputs();
     // console.log(isValid)
@@ -43,42 +45,47 @@ export default function Login() {
     //   return;
     // }
 
-    try {
+    // try {
       const loginAPIFunction = async () => {
-        const res = await axios.post(
-          "http://localhost:8080/login",
-          {
-            email: formData.email,
-            password: formData.password,
-          },
-          { withCredentials: true }
-        );
 
-        console.log(res.status);
-
-        const userInfo = res.data;
-        if (res.status === 200) {
-          const token = res.data.accessToken;
-          console.log(token);
-
-          localStorage.setItem("token", token);
-          dispatch(
-            loggedInUserInfo({
-              firstName: userInfo.firstName,
-              lastName: userInfo.lastName,
-              role: userInfo.role,
-              id: userInfo.id,
-            })
+        try{
+          const res = await axiosInstance.post(
+            "/login",
+            {
+              email: formData.email,
+              password: formData.password,
+            },
           );
-          navigate("/dashboard");
+  
+          console.log(res.status);
+  
+          const userInfo = res.data;
+          if (res.status === 200) {
+            const token = res.data.accessToken;
+            console.log(token);
+  
+            localStorage.setItem("token", token);
+            dispatch(
+              loggedInUserInfo({
+                firstName: userInfo.firstName,
+                lastName: userInfo.lastName,
+                role: userInfo.role,
+                id: userInfo.id,
+              })
+            );
+            // dispatch(storeAccountIdSelected())
+            toast.success("Logged in successfully")
+            navigate("/dashboard");
+          }
+        }catch(err){
+          console.error(err);
+          toast.error("Invalid username or password")
         }
-      };
 
+        }
+       
       loginAPIFunction();
-    } catch (err) {
-      setErrorMessage("Inavlid email or password");
-      setIsFormSubmitted(true);
-    }
+   
 
     // const validateInputs = () => {
     //   if (!formData.email.trim()) {
@@ -194,20 +201,7 @@ export default function Login() {
         </div>
       </footer>
 
-      <Snackbar
-        open={isFormSubmitted}
-        autoHideDuration={3000}
-        onClose={() => setIsFormSubmitted(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        message={errorMessage || "Loggedin Successfully"}
-        sx={{
-          "& .MuiSnackbarContent-root": {
-            background: errorMessage ? "#F87171" : "#4ADE80",
-            color: "black",
-            fontWeight: 500,
-          },
-        }}
-      />
+     
     </div>
   );
 }

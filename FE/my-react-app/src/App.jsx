@@ -24,21 +24,20 @@ import { CostContextFilter } from "./context/CostContext";
 import { CostExplorerProvider } from "./pages/CostExplorer/CostExplorerProvider";
 import { useDispatch, useSelector } from "react-redux";
 import { loggedInUserInfo } from "./redux/action/actions";
+import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
 
 function App() {
-
   const dispatch = useDispatch();
-  const userInfo = useSelector(state => state.loggedInUser);
+  const userInfo = useSelector((state) => state.loggedInUser);
 
-  useEffect(()=>{
+  useEffect(() => {
     const token = localStorage.getItem("token");
     const userInfo = localStorage.getItem("userinfo");
 
-    if(token && userInfo){
-      dispatch(loggedInUserInfo(userInfo))
+    if (token && userInfo) {
+      dispatch(loggedInUserInfo(userInfo));
     }
-
-  },[userInfo,dispatch]);
+  }, [userInfo, dispatch]);
 
   return (
     <>
@@ -51,24 +50,26 @@ function App() {
           <Route element={<ProtectedRoutes />}>
             <Route path="/dashboard" element={<Dashboard />}>
               <Route index element={<CostExplorer />} />
-              <Route path="cost-explorer" element={
-
-                <CostExplorerProvider>
-                  <CostExplorer />
-
-                </CostExplorerProvider>
-                
-                } />
-              <Route path="user-management" element={<UserManagement />}>
-                <Route path="add-user" element={<AddUser />} />
-              </Route>
+              <Route path="cost-explorer" element={<CostExplorer />} />
               <Route path="aws-services" element={<AwS_Services />} />
-              <Route path="accounts" element={<Onboarding_Parent />} />
-              <Route path="onboarding" element={<Onboarding_Accounts />} />
+
+              <Route
+                element={
+                  <ProtectedRoutes allowedRoles={["ADMIN", "READ_ONLY"]} />
+                }
+              >
+                <Route path="user-management" element={<UserManagement />}>
+                  <Route path="add-user" element={<AddUser />} />   
+                </Route>
+
+                <Route path="onboarding" element={<Onboarding_Accounts />} />
+                <Route path="accounts" element={<Onboarding_Parent />} />
+              </Route>
+
             </Route>
           </Route>
 
-          <Route path="*" element={<div>404 Not Found Page</div>} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </>

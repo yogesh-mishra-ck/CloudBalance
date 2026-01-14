@@ -7,7 +7,8 @@ import arnOnboard from "../../assets/arn-onboard.png";
 import Onboarding_Navbar from "../../components/Onboarding-Navbar/Onboarding_Navbar";
 import { Link, useNavigate } from "react-router-dom";
 import HandleCopy from "../../components/HandleCopy/HandleCopy";
-import { useState } from "react";
+// import { useState } from "react";
+import { toast } from "sonner";
 // import { useState } from "react";
 
 const Onboarding = ({ onNext, accountForm, setAccountForm }) => {
@@ -38,6 +39,23 @@ const Onboarding = ({ onNext, accountForm, setAccountForm }) => {
     }
   ]
 }`;
+
+  const validateAccountInputs = (accountFormData)=>{
+    const { accountARN, accountId, accountName } = accountFormData;
+    if(accountARN==="") return { isValid: false, field: "IAM Role ARN"};
+    if(accountId==="") return { isValid:false, field: "Account ID" };
+    if(accountName==="") return { isValid:false, field: "Account Name"}
+
+    return { isValid: true}
+  }
+  const handleNext = ()=>{
+      const validationData = validateAccountInputs(accountForm);
+      if(!validationData.isValid){
+        toast.error(`${validationData.field} is required`)
+        return;
+      }
+      onNext();
+  }
 
   const jsonDataToPass = JSON.stringify(JSON.parse(jsondata), null, 2);
 
@@ -140,14 +158,14 @@ const Onboarding = ({ onNext, accountForm, setAccountForm }) => {
                 <div className="flex">
                   <div className="pl-2 mt-2 mb-12">
                     <label htmlFor="iam-role-arn">
-                      Enter the IAM Role ARN*
+                      Enter the IAM Role ARN
                     </label>
                     <p>
                       <input
                         type="text"
                         id="iam-role-arn"
                         required
-                        className="border rounded border-red-500 p-2 w-110"
+                        className={`border rounded  p-2 w-110 ${!accountForm.accountARN?.trim() ? "border-red-500": ""}`}
                         placeholder="Enter the IAM Role ARN"
                         onChange={(e) =>
                           setAccountForm((prev) => ({
@@ -159,13 +177,13 @@ const Onboarding = ({ onNext, accountForm, setAccountForm }) => {
                     </p>
                   </div>
                   <div className="pl-2 mt-2 mb-12">
-                    <label htmlFor="iam-role-arn">Enter the Account ID*</label>
+                    <label htmlFor="iam-role-arn">Enter the Account ID</label>
                     <p>
                       <input
                         type="text"
                         id="iam-account-id"
                         required
-                        className="border rounded border-red-500 p-2 w-110"
+                        className={`border rounded  p-2 w-110 ${!accountForm.accountId?.trim() ? "border-red-500": ""}`}
                         placeholder="Enter the Account ID"
                         onChange={(e) =>
                           setAccountForm((prev) => ({
@@ -178,14 +196,14 @@ const Onboarding = ({ onNext, accountForm, setAccountForm }) => {
                   </div>
                   <div className="pl-2 mt-2 mb-12">
                     <label htmlFor="iam-role-arn">
-                      Enter the Acoount Name*
+                      Enter the Acoount Name
                     </label>
                     <p>
                       <input
                         type="text"
                         id="iam-account-name"
                         required
-                        className="border rounded border-red-500 p-2 w-110"
+                        className={`border rounded  p-2 w-110 ${!accountForm.accountName?.trim() ? "border-red-500": ""}`}
                         placeholder="Enter the Account Name"
                         onChange={(e) =>
                           setAccountForm((prev) => ({
@@ -203,7 +221,7 @@ const Onboarding = ({ onNext, accountForm, setAccountForm }) => {
         </main>
         <footer className="mt-2 flex justify-between">
           <button
-            className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold"
+            className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer"
             onClick={() => navigate("/dashboard/onboarding")}
           >
             Cancel
@@ -211,14 +229,14 @@ const Onboarding = ({ onNext, accountForm, setAccountForm }) => {
 
           <div className="flex gap-1">
             <button
-              className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold"
+              className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer"
               onClick={() => navigate("/dashboard/onboarding")}
             >
               Back
             </button>
             <button
-              className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold"
-              onClick={onNext}
+              className="text-sky-700 bg-white shadow-2xl border-blue-800 p-2 rounded border mb-2 font-bold cursor-pointer"
+              onClick={handleNext}
             >
               {/* <Link to="/onboarding2">Next - Add Customer Managed Policies</Link> */}
               Add Customer Managed Policies

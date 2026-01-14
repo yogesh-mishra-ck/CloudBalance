@@ -1,16 +1,21 @@
 import CheckBoxOutlineBlankSharpIcon from "@mui/icons-material/CheckBoxOutlineBlankSharp";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
-import { useContext, useEffect, useMemo, useState } from "react";
+import {  useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInterceptor";
 import { CostContextFilter } from "../../context/CostContext";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const FilterSelection = ({
   filterName,
   setActiveFilter,
   setFilterSelectionAPI,
-
   onCheckedParentFilter,
+  
+  
+  appliedFilters,
+  onApply
 }) => {
   const [selectedFilters, setSelectedFilters] = useState(new Set());
   // const selectedFilters = new Set();
@@ -21,18 +26,42 @@ const FilterSelection = ({
 
   const filterType = firstPartFilter;
   console.log("Filter name is ", filterType);
+  const { role, id } = useSelector(state => state.loggedInUser);
 
   const [options, setOptions] = useState([]);
   useEffect(() => {
     const allFilters = async () => {
-      const res = await axiosInstance.get(
-        `/getAllFilters?allFilterType=${filterType}`
-      );
-      const fetchedFilters = res.data;
-      setOptions(fetchedFilters);
+      try{
+          // console.log("Filter types ", filterName," ", filterType);
+        if(role === "CUSTOMER" && filterType==="ACCOUNT_ID"){
+          const res = await axiosInstance.get(
+            `/account/${id}`
+          );
+          const fetchedFilters = res.data;
+          // console.log("Reached")
+          // console.log(fetchedFilters)
+          const accountIdsThisUser = fetchedFilters.map(userInfo => userInfo.accountId);
+          // console.log(accountIdsThisUser)
+          setOptions(accountIdsThisUser);
+        }else{
+          const res = await axiosInstance.get(
+            `/getAllFilters?allFilterType=${filterType}`
+          );
+          const fetchedFilters = res.data;
+          setOptions(fetchedFilters);
+        }
+      }catch(e){
+        console.error(e);
+        setOptions([])
+        toast.error("Couldn't fetch filter options for ",filterType)
+      }
     };
     allFilters();
-  }, [filterName]);
+  }, [filterName,filterType]);
+
+  // useEffect(()=>{
+  //   setSelectedFilters(new Set())
+  // },[filterSelectionAPI])
 
   const FILTER_PARAM_MAP = {
     SERVICE: "service",
@@ -57,19 +86,11 @@ const FilterSelection = ({
     });
     console.log(filterAPIKey);
     setFilterSelectionAPI(filterAPIKey);
-    // const newParams = [{}];
-    // selectedFilters.forEach((chosenFilter) => {
-    //   newParams[FILTER_PARAM_MAP[filterType]] =  chosenFilter;
-    //   newParams[
-
-    //   ]
-    // });
-    // newParams[filterType] = Array.from(selectedFilters);
-
-    // console.log(newParams)
-    // setFilterSelectionAPI(newParams);
+    onApply(Array.from(selectedFilters))
+    setActiveFilter("");
   };
 
+ 
   const isAllSelected =
     options.length > 0 && options.length === selectedFilters.size;
   const handleAllClick = () => {
@@ -86,8 +107,12 @@ const FilterSelection = ({
   const [userInput, setUserInput] = useState("");
 
   const searchedFilters = options.filter((current) =>
-    current.includes(userInput)
+    current.toLowerCase().includes(userInput.toLowerCase())
   );
+
+  useEffect(()=>{
+    setSelectedFilters(new Set(appliedFilters));
+  },[appliedFilters])
 
   return (
     <div className=" z-4 mt-2 shadow-xl shadow-gray-200 rounded p-3.5">
@@ -110,7 +135,7 @@ const FilterSelection = ({
 
       <ul className=" h-100 overflow-y-auto">
         <li
-          className="flex h-7 mb-2.5 gap-1.5 text-gray-700"
+          className="flex h-7 mb-2.5 gap-1.5 text-gray-700 cursor-pointer"
           onClick={handleAllClick}
         >
           {isAllSelected ? (
@@ -125,7 +150,7 @@ const FilterSelection = ({
           (optionName) => (
             <li
               key={optionName}
-              className="flex h-7 mb-2.5 gap-1.5 text-gray-700 "
+              className="flex h-7 mb-2.5 gap-1.5 text-gray-700 cursor-pointer"
               onClick={() => {
                 const newSet = new Set(selectedFilters);
 
@@ -159,7 +184,7 @@ const FilterSelection = ({
           Close
         </button>
         <button
-          className="text-white bg-zinc-500 shadow font-bold shadow-gray-300 rounded-md px-5 py-0.5"
+          className="text-white bg-blue-500 shadow font-bold shadow-gray-300 rounded-md px-5 py-0.5 cursor-pointer"
           onClick={handleSubmit}
         >
           Apply

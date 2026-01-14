@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import { emailRegex, nameRegex } from "../../utils/regex";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInterceptor";
 import ManageAccount from "../../components/ManageAccount/ManageAccount";
 import { useDispatch, useSelector } from "react-redux";
 import { storeUserTable } from "../../redux/action/actions";
+import { toast } from "sonner";
 
 function AddUser() {
-
   const location = useLocation();
   const dispatch = useDispatch();
   const { state } = location;
@@ -20,7 +20,7 @@ function AddUser() {
     lastName: user?.lastName || "",
     emailId: user?.emailId || "",
     role: user?.role || "",
-    password: user?.password || ""
+    password: user?.password || "",
   };
   const [formData, setFormData] = useState(initialState);
   const [errorMessage, setErrorMessage] = useState("");
@@ -30,89 +30,131 @@ function AddUser() {
   const loggedInUser = useSelector((state) => state.loggedInUser);
   // const [selectedAccountsIds, setSelectedAccountsIds] = useState([]);
 
-
+  
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     //saare accounts associated with this user ki api call
     //set krdo vo accounts isse
-    const getMyAccounts = async ()=>{
-      const res = await axiosInstance.get(`/account/${user.id}`);
-      const userAccounts = res.data;
-      const accountsMap = new Map(userAccounts.map(account => [account.id, account]));
-      setSelectedAccounts(accountsMap);
-    }
-    if(isEditMode)
-      getMyAccounts();
-  },[isEditMode]);
+    const getMyAccounts = async () => {
+      try {
+        const res = await axiosInstance.get(`/account/${user.id}`);
+        const userAccounts = res.data;
+        const accountsMap = new Map(
+          userAccounts.map((account) => [account.id, account])
+        );
+        setSelectedAccounts(accountsMap);
+      } catch (err) {
+        console.error(err);
+        setSelectedAccounts(new Map());
+      }
+    };
+    if (isEditMode) getMyAccounts();
+  }, [isEditMode, user.id]);
 
-  const handleSubmit = async (e) => {
+
+  // useEffect(()=>{
+  //   if(loggedInUser.role !== "ADMIN")
+  //     return <Navigate to="/notfound"/>
+  // },[])
+
+  // ############################################
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userInfo = localStorage.getItem("userinfo");
+    
+    if (token && userInfo) {
+      dispatch(loggedInUser(JSON.parse(userInfo)));  // Ensure userInfo is parsed correctly
+    }
+  }, [dispatch,loggedInUser]);  // Add `dispatch` to the dependency array
+  // ############################################
+
+ if (loggedInUser.role !== "ADMIN") {
+    return <Navigate to="/notfound" replace />;
+  }
+  const handleSubmit = (e) => {
     e.preventDefault();
     setErrorMessage("");
-    
+
     const isValid = validateInputs();
-    setIsFormSubmitted(true); 
-    
+    setIsFormSubmitted(true);
+
     if (!isValid) {
       setIsFormSubmitted(true);
       return;
     }
-    console.log("Hello")
+    console.log("Hello");
 
-    const selectedAccountIds =  Array.from(selectedAccounts.keys());
+    const selectedAccountIds = Array.from(selectedAccounts.keys());
 
-
-    try{
-      if(isEditMode){
-        // selectedAccounts
-        //
-
-        // if(loggedInUser.id === user.id)
-
-        await axiosInstance.put(`/user/${user.id}`, {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData?.emailId || "",
-          role: formData?.role || "",
-          selectedAccounts: selectedAccountIds
-        })
-      }
-      // else{
-      //   await axiosInstance.post("/user", formData);
-      // }
-      // const createUserApiCall = async () => {
-        // const res = 
-
-        else{
-          console.log("Before")
-          await axiosInstance.post('/user', {
+    if (isEditMode) {
+      // selectedAccounts
+      // if(loggedInUser.id === user.id)
+      const updateUser = async () => {
+        try {
+          const resp = await axiosInstance.put(`/user/${user.id}`, {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData?.emailId || "",
+            role: formData?.role || "",
+            selectedAccounts: selectedAccountIds,
+          });
+          if (resp.status == 200) toast.success("User updated successfully");
+        } catch (err) {
+          console.log(err);
+          toast.error("Failed to update user");
+        }
+      };
+      updateUser();
+    } else {
+      console.log("Before");
+      const createUser = async () => {
+        try {
+          const resp = await axiosInstance.post("/user", {
             firstName: formData.firstName,
             lastName: formData.lastName,
             email: formData.emailId,
             role: formData.role,
             password: formData.password,
-  
-            // accounts ids added in sending data 
-            selectedAccounts: selectedAccountIds
-          })
-          console.log("After")
-          setErrorMessage("");
-        }
 
+            // accounts ids added in sending data
+            selectedAccounts: selectedAccountIds,
+          });
+          if (resp.status == 201) toast.success("User Created Successfully");
+        } catch (err) {
+          console.error(err);
+          toast.error("Failed to create User");
+        }
+      };
+      createUser();
+
+      const initializeDataOnUpdate = async () => {
+        try {
+          const res = await axiosInstance.get("/user");
+          const retrivedData = res.data;
+          console.log("DATA FETCHED AGAIN ", retrivedData);
+          dispatch(storeUserTable({ user: retrivedData}));
+        } catch (error) {
+          console.error("Error during fetching data" + error);
+        }
+      };
+      initializeDataOnUpdate();
+    }
+
+    const updateStoreUserTable = async () => {
+      try {
         const resp = await axiosInstance.get("/user");
         const updatedUsersData = resp.data;
         dispatch(storeUserTable(updatedUsersData));
-        
-        
-    }catch(e){
-      setErrorMessage(e.response?.data?.message || "Failed to create user");
-      setIsFormSubmitted(true);
-      // setFormData(initialState)
-    }
-
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    updateStoreUserTable();
   };
 
   const validateInputs = () => {
@@ -149,8 +191,10 @@ function AddUser() {
   };
 
   return (
-    <div>
-      <h2 className="pl-4 py-2 px-4 font-bold text-3xl">{isEditMode ? "Edit User": "Add New User"}</h2>
+    <div className="h-234">
+      <h2 className="pl-4 py-2 px-4 font-bold text-3xl">
+        {isEditMode ? "Edit User" : "Add New User"}
+      </h2>
 
       {/* <ManageAccount/> */}
 
@@ -183,24 +227,20 @@ function AddUser() {
               />
             </div>
 
-            {
-              !isEditMode && (
+            {!isEditMode && (
               <div className="flex flex-col pl-2">
-              <label htmlFor="lastName">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter Password"
-                value={formData.password}
-                onChange={handleChange}
-                className="rounded-sm p-2.5 border border-gray-300 focus:outline-0 focus:border-gray-300 focus:shadow-sm"
-              />
-            </div>
-              )
-            }
-
-
+                <label htmlFor="lastName">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Enter Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="rounded-sm p-2.5 border border-gray-300 focus:outline-0 focus:border-gray-300 focus:shadow-sm"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex gap-12 mt-3.5">
@@ -247,8 +287,11 @@ function AddUser() {
           {isEditMode ? "Update User" : "Add User"}
         </button>
       </form>
-      
-      <ManageAccount selectedAccounts={selectedAccounts} setSelectedAccounts={setSelectedAccounts} />
+
+      <ManageAccount
+        selectedAccounts={selectedAccounts}
+        setSelectedAccounts={setSelectedAccounts}
+      />
 
       <Snackbar
         open={isFormSubmitted}
@@ -256,7 +299,8 @@ function AddUser() {
         onClose={() => setIsFormSubmitted(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         message={
-          errorMessage || `User ${isEditMode ? 'updated' : 'created'} successfully`
+          errorMessage ||
+          `User ${isEditMode ? "updated" : "created"} successfully`
         }
         sx={{
           "& .MuiSnackbarContent-root": {

@@ -13,11 +13,17 @@ export default function Onboarding_Accounts() {
 
     useEffect(()=>{
         const getAccounts = async()=>{
+          try{
             const res = await axiosInstance.get("/admin/account");
             console.log("response is");
             console.log(res.data);
             console.log(res.status)
             setAllAccounts(res.data);
+
+          }catch(err){
+            console.error(err);
+            setAllAccounts([])
+          }
         }
         getAccounts();
         
@@ -32,65 +38,67 @@ export default function Onboarding_Accounts() {
       {/* table  */}
 
       <main className="w-300 mt-5">
-        <table className="table-auto  w-full">
-          <thead>
-            <tr className="bg-blue-900 text-white">
-              <th className="border-r border-gray-300  w-65 px-2 py-1">
-                <div className="flex justify-between font-medium">
-                  <span>Account ARN</span>
-                  
-                </div>
-              </th>
-              <th className="border-r border-gray-300   w-65 px-2 py-1">
-                <div className="flex justify-between font-medium">
-                  <span>Account Name</span>
-                  
-                </div>
-              </th>
-              <th className="border-r border-gray-300 w-65 px-2 py-1">
-                <div className="flex justify-between font-medium">
-                  <span>Account ID</span>
-                  
-                </div>
-              </th>
-              
-            </tr>
-          </thead>
-
-          <tbody className="">
-            {allAccounts.map((account, index) => (
-              <tr key={account.id}>
-                <td
-                  className={` border-r border-gray-300 border-l w-65  px-2 py-1 ${
-                    index === allAccounts.length - 1 ? "border-b" : ""
-                  } ${index % 2 !== 0 ? "bg-gray-200" : ""}`}
-                >
+        <div className="overflow-y-auto h-220">
+          <table className="table-auto  w-full">
+            <thead>
+              <tr className="bg-blue-900 text-white">
+                <th className="border-r border-gray-300  w-65 px-2 py-1">
                   <div className="flex justify-between font-medium">
-                    <span>{account.arnNumber}</span>
+                    <span>Account ARN</span>
+                    
                   </div>
-                </td>
-                <td
-                  className={` border-r border-gray-300 border-l w-65  px-2 py-1 ${
-                    index === allAccounts.length - 1 ? "border-b" : ""
-                  } ${index % 2 !== 0 ? "bg-gray-200" : ""}`}
-                >
+                </th>
+                <th className="border-r border-gray-300   w-65 px-2 py-1">
                   <div className="flex justify-between font-medium">
-                    <span>{account.accountName}</span>
+                    <span>Account Name</span>
+                    
                   </div>
-                </td>
-                <td
-                  className={` border-r border-gray-300 border-l w-65  px-2 py-1 ${
-                    index === allAccounts.length - 1 ? "border-b" : ""
-                  } ${index % 2 !== 0 ? "bg-gray-200" : ""}`}
-                >
+                </th>
+                <th className="border-r border-gray-300 w-65 px-2 py-1">
                   <div className="flex justify-between font-medium">
-                    <span>{account.accountId}</span>
+                    <span>Account ID</span>
+                    
                   </div>
-                </td>
+                </th>
+                
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody className="">
+              {allAccounts.map((account, index) => (
+                <tr key={account.id}>
+                  <td
+                    className={` border-r border-gray-300 border-l w-65  px-2 py-1 ${
+                      index === allAccounts.length - 1 ? "border-b" : ""
+                    } ${index % 2 !== 0 ? "bg-gray-200" : ""}`}
+                  >
+                    <div className="flex justify-between font-medium">
+                      <span>{account.arnNumber}</span>
+                    </div>
+                  </td>
+                  <td
+                    className={` border-r border-gray-300 border-l w-65  px-2 py-1 ${
+                      index === allAccounts.length - 1 ? "border-b" : ""
+                    } ${index % 2 !== 0 ? "bg-gray-200" : ""}`}
+                  >
+                    <div className="flex justify-between font-medium">
+                      <span>{account.accountName}</span>
+                    </div>
+                  </td>
+                  <td
+                    className={` border-r border-gray-300 border-l w-65  px-2 py-1 ${
+                      index === allAccounts.length - 1 ? "border-b" : ""
+                    } ${index % 2 !== 0 ? "bg-gray-200" : ""}`}
+                  >
+                    <div className="flex justify-between font-medium">
+                      <span>{account.accountId}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </main>
     </div>
   );

@@ -67,6 +67,8 @@ function Navbar() {
         }
 
         setAccountsThisUser(res.data);
+        console.log("Account id first", res.data[0].accountId)
+        // dispatch(storeAccountIdSelected(res.data[0].accountId))
       } catch (err) {
         if (err.response?.status === 403) {
           console.warn("Forbidden: role not allowed for this endpoint");

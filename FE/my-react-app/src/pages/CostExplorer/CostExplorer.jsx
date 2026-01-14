@@ -23,62 +23,7 @@ import axiosInstance from "../../utils/axiosInterceptor";
 import { useDispatch, useSelector } from "react-redux";
 import { storeCostGroupBy } from "../../redux/action/actions";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-
-const DatePickerTailwind = ({ setFilterSelectionAPI }) => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-
-  useEffect(() => {
-    let query = "";
-
-    if (startDate) query += `&startDate=${startDate}`;
-    if (endDate) query += `&endDate=${endDate}`;
-
-    setFilterSelectionAPI(query);
-  }, [startDate, endDate]);
-
-  return (
-    <div className="flex gap-4 mb-2">
-      <div>
-        <label className="block ">Start Date:</label>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => {
-            setStartDate(e.target.value);
-            // setFilterSelectionAPI((prev)=>{
-            //   return {
-            //     ...prev,
-            //     startDate: e.target.value
-            //   }
-            // })
-          }}
-          className="border border-gray-300 rounded-md px-2 py-1 cursor-pointer w-36
-          
-          "
-        />
-      </div>
-
-      <div>
-        <label className="block ">End Date:</label>
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => {
-            setEndDate(e.target.value);
-            // setFilterSelectionAPI((prev)=>{
-            //   return {
-            //     ...prev,
-            //     endDate: e.target.value
-            //   }
-            // })
-          }}
-          className="border border-gray-300 rounded-md px-2 py-1 cursor-pointer w-36"
-        />
-      </div>
-    </div>
-  );
-};
+import DatePickerTailwind from "../../components/DatePicker/DateFilter";
 
 function CostExplorer() {
   const navbarElements = [
@@ -121,6 +66,8 @@ function CostExplorer() {
 
   const [activeFilter, setActiveFilter] = useState("");
   const [checkedParentFilter, setCheckedParentFilter] = useState({});
+
+  const [appliedFilterValues, setAppliedFilterValues] = useState({});
 
   // const [data, setData] = useState({});
 
@@ -172,21 +119,42 @@ function CostExplorer() {
           <main className="flex justify-between w-full">
             <div className="flex">
               <ul className="flex gap-3">
-                {navbarElements.map((currentGroup) => (
-                  <li key={currentGroup}>
-                    <button
-                      className={`text-blue-900  rounded  border-slate-200 border p-1.5 font-semibold cursor-pointer ${
-                        groupByValue ===
-                        currentGroup.toUpperCase().replaceAll(" ", "_")
-                          ? "font-bold bg-blue-500 text-white"
-                          : "font-semibold"
-                      } }`}
-                      onClick={() => handleGroupByCharts(currentGroup)}
-                    >
-                      {currentGroup}
-                    </button>
-                  </li>
-                ))}
+                <li>
+                  <button className="  rounded  border-slate-200 border p-1.5 cursor-pointer font-bold bg-blue-500 text-white ">
+                    {groupByValue
+                      .split("_")
+                      .map(
+                        (typeOfGroup) =>
+                          typeOfGroup[0].toUpperCase() +
+                          typeOfGroup.slice(1).toLowerCase()
+                      )
+                      .join(" ")}
+                  </button>
+                </li>
+
+                {navbarElements.map((currentGroup) => {
+                  if (
+                    !(
+                      groupByValue ===
+                      currentGroup.toUpperCase().replaceAll(" ", "_")
+                    )
+                  )
+                    return (
+                      <li key={currentGroup}>
+                        <button
+                          className={`text-blue-900  rounded  border-slate-200 border p-1.5 font-semibold cursor-pointer ${
+                            groupByValue ===
+                            currentGroup.toUpperCase().replaceAll(" ", "_")
+                              ? "font-bold bg-blue-500 text-white"
+                              : "font-semibold"
+                          } }`}
+                          onClick={() => handleGroupByCharts(currentGroup)}
+                        >
+                          {currentGroup}
+                        </button>
+                      </li>
+                    );
+                })}
               </ul>
               {/* <CustomDropdown onSelect={(val) => setgroupByData(val)} /> */}
               <CustomDropdown />
@@ -312,10 +280,28 @@ function CostExplorer() {
               <div
                 className="text-blue-800 flex"
                 onClick={() => {
-                  setFilterSelectionAPI("");
+                  // setAppliedFilterValues({});
+                  // setCheckedParentFilter({});
+                  // setFilterSelectionAPI([]);
                 }}
               >
-                <p className="text-shadow-blue-800 font-bold">Reset-All</p>
+                <p
+                  className="text-shadow-blue-800 font-bold cursor-pointer"
+                  onClick={() => {
+                    console.log(
+                      "Filter selection api data BEFORE",
+                      filterSelectionAPI
+                    );
+                    setFilterSelectionAPI([]);
+                    // setAppliedFilterValues({})
+                    console.log(
+                      "Filter selection api data AFTER",
+                      filterSelectionAPI
+                    );
+                  }}
+                >
+                  Reset-All
+                </p>
                 <RestartAltSharpIcon />
               </div>
             </nav>
@@ -355,12 +341,17 @@ function CostExplorer() {
                         <FilterSelection
                           filterName={filter}
                           setActiveFilter={setActiveFilter}
-                          filterSelectionAPI={filterSelectionAPI}
                           setFilterSelectionAPI={setFilterSelectionAPI}
-                          onCheckedParentFilter={(isChecked) => {
+                          appliedFilters={appliedFilterValues[filter] || []}
+                          onApply={(values) => {
+                            setAppliedFilterValues((prev) => ({
+                              ...prev,
+                              [filter]: values,
+                            }));
+
                             setCheckedParentFilter((prev) => ({
                               ...prev,
-                              [filter]: isChecked,
+                              [filter]: values.length > 0,
                             }));
                           }}
                         />
