@@ -27,6 +27,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        if(request.getRequestURL().equals("/login")&& request.getMethod().equals("POST")){
+            doFilter(request,response,filterChain);
+            return;
+        }
+
         System.out.println("All Cookies!");
         Cookie[] cookies = request.getCookies();
 

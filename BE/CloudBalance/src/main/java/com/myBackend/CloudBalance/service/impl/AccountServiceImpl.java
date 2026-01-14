@@ -11,7 +11,9 @@ import com.myBackend.CloudBalance.repository.AccountRepository;
 import com.myBackend.CloudBalance.repository.UserDetailsRepository;
 import com.myBackend.CloudBalance.service.AccountService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public CreateAccountResponseDTO createAccount(CreateAccountRequestDTO createAccountRequestDTO, Long userId) {
 
+        if(accountRepository.existsByAccountId(createAccountRequestDTO.getAccountId()))
+            throw  new BadCredentialsException("Account is already present with this accountId");
         //
 //        User user = userDetailsRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found with this id"));
         Account account = Account.builder()
@@ -82,15 +86,11 @@ public class AccountServiceImpl implements AccountService {
         System.out.println("Hi");
         List<Account> retrievedAccounts = accountRepository.findByIdIn(ids);
 
-        if (retrievedAccounts.isEmpty()) {
-            throw new RuntimeException("No accounts found for given IDs");
-        }
 
         System.out.println(ids);
         System.out.println(retrievedAccounts);
         for(Account ac: retrievedAccounts){
             ac.getUsers().add(newUser);
-//            newUser.getAccounts().add(ac);
         }
 
         newUser.getAccounts().clear();

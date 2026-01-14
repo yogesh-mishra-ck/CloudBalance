@@ -17,8 +17,10 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String token;
 
+    @Column(nullable = false)
     private Instant expiryDate;
 
     @ToString.Exclude

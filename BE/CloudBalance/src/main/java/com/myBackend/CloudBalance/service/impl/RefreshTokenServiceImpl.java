@@ -1,11 +1,13 @@
 package com.myBackend.CloudBalance.service.impl;
 
 import com.myBackend.CloudBalance.entity.RefreshToken;
+import com.myBackend.CloudBalance.exceptions.InvalidRefreshTokenException;
 import com.myBackend.CloudBalance.repository.RefreshTokenRepository;
 import com.myBackend.CloudBalance.repository.UserDetailsRepository;
 import com.myBackend.CloudBalance.service.RefreshTokenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,10 +24,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     public RefreshToken createRefreshToken(String email){
 
+
+
         String token = UUID.randomUUID().toString();
 
         RefreshToken refreshToken = RefreshToken.builder()
-                .user(userDetailsRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not valid")))
+                .user(userDetailsRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("User not found")))
                 .token(token)
                 .expiryDate(Instant.now().plusSeconds(24*60*60))
                 .build();
@@ -42,7 +46,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public boolean verifyExpiration(RefreshToken refreshToken){
         if(refreshToken.getExpiryDate().isBefore(Instant.now())){
             refreshTokenRepository.delete(refreshToken);
-            throw new RuntimeException(refreshToken.getToken()+ " Refresh Token is expired! Login again");
+            throw new InvalidRefreshTokenException(refreshToken.getToken()+ " Refresh Token is expired! Login again");
         }
         return true;
     }

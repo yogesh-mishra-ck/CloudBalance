@@ -6,12 +6,16 @@ import com.myBackend.CloudBalance.entity.Account;
 import com.myBackend.CloudBalance.entity.CustomUserDetails;
 import com.myBackend.CloudBalance.entity.Roles;
 import com.myBackend.CloudBalance.entity.User;
+import com.myBackend.CloudBalance.exceptions.InvalidTokenException;
+import com.myBackend.CloudBalance.exceptions.LoggedInUserNotFoundException;
 import com.myBackend.CloudBalance.repository.AccountRepository;
 import com.myBackend.CloudBalance.repository.UserDetailsRepository;
 import com.myBackend.CloudBalance.service.AccountService;
 import com.myBackend.CloudBalance.service.UserService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public User getUser(String email){
-        User user = userDetailsRepository.findByEmail(email).orElseThrow( () ->new RuntimeException("User not found with this email"));
+        User user = userDetailsRepository.findByEmail(email).orElseThrow( () ->new BadCredentialsException("User not found with this email"));
         return user;
     }
 
@@ -69,26 +73,13 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public CreateUserResponseDTO updateUser(UpdateUserRequestDTO updateUserRequestDTO, Long userId) {
-//        User userFetchedFromDB = userDetailsRepository.findById(userId).orElseThrow(()-> new RuntimeException("No user found with this id"));
-//        Roles role = Roles.valueOf(updateUserRequestDTO.getRole().toUpperCase());
-//
-//
-//        userFetchedFromDB.setFirstName(updateUserRequestDTO.getFirstName());
-//        userFetchedFromDB.setLastName(updateUserRequestDTO.getLastName());
-//        userFetchedFromDB.setEmail(updateUserRequestDTO.getEmail());
-//        userFetchedFromDB.setRole(role);
-//
-//        userFetchedFromDB = userDetailsRepository.save(userFetchedFromDB);
-//        return new CreateUserResponseDTO(userFetchedFromDB.getId(), userFetchedFromDB.getFirstName(), userFetchedFromDB.getEmail(), "User updated successfully");
 
         User userFetchedFromDB = userDetailsRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("No user found with this id"));
         Roles role = Roles.valueOf(updateUserRequestDTO.getRole().toUpperCase());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User loggedInUser = userDetailsRepository.findByEmail(authentication.getName()).orElseThrow(()-> new RuntimeException("Can't find logged in user's entity"));
+        User loggedInUser = userDetailsRepository.findByEmail(authentication.getName()).orElseThrow(()-> new LoggedInUserNotFoundException("Can't find logged in user's entity"));
 
-        if(loggedInUser == null)
-            throw new RuntimeException("User not set in context");
 
         //editing myself
         if(loggedInUser.getId().equals(userId)){
@@ -114,7 +105,18 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUserOnboardAccount(AccountMapUserCreate accountMapUserCreate) {
 
-        Roles role = Roles.valueOf(accountMapUserCreate.getRole().toUpperCase());
+        Roles role;
+        try{
+            role = Roles.valueOf(accountMapUserCreate.getRole().toUpperCase());
+        }catch (IllegalArgumentException e){
+            throw new ValidationException("Invalid role "+accountMapUserCreate.getRole());
+        }
+
+        if(userDetailsRepository.existsByEmail(accountMapUserCreate.getEmail()))
+            throw new ValidationException("Email already exists");
+
+
+//        Roles role =
         User user = User.builder()
                 .firstName(accountMapUserCreate.getFirstName())
                 .lastName(accountMapUserCreate.getLastName())
@@ -150,11 +152,15 @@ public class UserServiceImpl implements UserService {
         if(authentication == null || !authentication.isAuthenticated())
             throw new UsernameNotFoundException("User not in session");
 
+        Object principal = authentication.getPrincipal();
+        if(!(principal instanceof CustomUserDetails)){
+            throw new InvalidTokenException("Invalid or expired token");
+        }
 
         CustomUserDetails customUserDetails = (CustomUserDetails)authentication.getPrincipal();
         String username = customUserDetails.getUsername();
 
-        User user = userDetailsRepository.findByEmail(username).orElseThrow(()-> new RuntimeException("User not found in db"));
+        User user = userDetailsRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
         String role = user.getRole().toString();

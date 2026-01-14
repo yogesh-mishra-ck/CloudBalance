@@ -53,30 +53,18 @@ public class SecurityConfig {
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/login").permitAll()
+                                .requestMatchers("/login/**").permitAll()
                                 .requestMatchers("/refresh").permitAll()
                                 .requestMatchers("/logout").permitAll()
                                 .requestMatchers("/user/me").permitAll()
+                                .requestMatchers("/error").permitAll()
 
                                 .requestMatchers("/snowflake").permitAll()
-//                                .requestMatchers("/get-cost").permitAll()
-//                                .requestMatchers("/getAllFilters").permitAll()
-//                                .requestMatchers(HttpMethod.GET, "/healthy").hasAuthority(Permissions.READ.name())
-//                                .requestMatchers(HttpMethod.POST, "/healthy").hasAuthority(Permissions.WRITE.name())
-//                                .requestMatchers(HttpMethod.GET, "/user").hasAnyRole(Roles.READ_ONLY.name(), Roles.ADMIN.name())
-//                                .requestMatchers(HttpMethod.POST, "/user").hasAnyRole(Roles.ADMIN.name())
-//                                .requestMatchers(HttpMethod.PUT, "/user/**").hasAnyRole(Roles.ADMIN.name())
+
 
                                 //accounts
                                 .requestMatchers("/me/**").authenticated()
 //                                .requestMatchers("/admin/**").hasRole(Roles.ADMIN.name())
-
-
-//
-//                                .requestMatchers("/{id}/account").hasAnyAuthority(Role.ADMIN,Role.CUSTOMER)
-//                                .requestMatchers(HttpMethod.POST,"/account/**").hasAnyRole(Role.ADMIN)
-//                                .requestMatchers("/account/**").hasAnyRole(Role.ADMIN, Role.CUSTOMER)
-
 //                                .requestMatchers(HttpMethod.POST, HttpMethod.PUT, "/user").hasRole("ADMIN")
                                 .anyRequest().authenticated());
 

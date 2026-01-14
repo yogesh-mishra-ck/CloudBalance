@@ -42,10 +42,12 @@ public class User  {
     private String firstName;
 
     @NotBlank(message = "Last Name is required")
+    @Column(nullable = false)
     @Size(max = 50, message = "Last Name can have at most 50 characters ")
     private String lastName;
 
     @NotBlank(message = "Email is required")
+    @Column(nullable = false)
     @Email(message = "Email should be valid")
     private String email;
 
@@ -53,9 +55,11 @@ public class User  {
 
     private Instant lastLogin;
 
+    @Column(nullable = false)
     @NotBlank(message = "Password is required")
     private String password;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Roles role;
 

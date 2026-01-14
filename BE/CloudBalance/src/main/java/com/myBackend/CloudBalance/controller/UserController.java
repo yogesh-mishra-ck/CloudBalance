@@ -29,14 +29,6 @@ public class UserController {
         return ResponseEntity.ok().body(users);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @PostMapping
-//    public ResponseEntity<CreateUserResponseDTO> createUser(@Valid @RequestBody CreateUserRequestDTO createUserRequestDTO){
-//        System.out.println(createUserRequestDTO);
-//        CreateUserResponseDTO createUserResponseDTO = userService.createUser(createUserRequestDTO);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(createUserResponseDTO);
-//    }
-
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CreateUserResponseDTO> updateUser(@Valid @RequestBody UpdateUserRequestDTO updateUserRequestDTO, @PathVariable("id") Long userId){
@@ -50,7 +42,7 @@ public class UserController {
         System.out.println(accountMapUserCreate);
         User user = userService.createUserOnboardAccount(accountMapUserCreate); //except selected accounts
 //        accountService.mapAccountsToThisUser(accountMapUserCreate);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -61,10 +53,11 @@ public class UserController {
         return ResponseEntity.ok().body(updatedUser);
     }
 
+
     @GetMapping("/me")
     public ResponseEntity<LoggedInUserDTO> getLoggedInUserDetails(){
 
-        LoggedInUserDTO userInfo = userService.getLoggedInUserDetails();
+            LoggedInUserDTO userInfo = userService.getLoggedInUserDetails();
         return ResponseEntity.ok().body(userInfo);
     }
 }

@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class CostExplorerController {
 
     private final CostExplorerService costExplorerService;
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER','READ_ONLY')")
     @GetMapping("/get-cost")
     public ResponseEntity<?> getCost(
             @RequestParam(defaultValue = "SERVICE") String groupBy,
@@ -40,14 +42,13 @@ public class CostExplorerController {
 
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate
+     ){
 
-//            @RequestParam(required = false) String accountIdSelected
-            ){
         System.out.println("In cost exp controller");
         return ResponseEntity.ok().body(costExplorerService.getCost(groupBy, service,instanceType,accountId,usageType,platform,region,purchaseOption,usageTypeGroup,apiOperation,resource,availibilityZone,tenancy,legalEntity,billingEntity,startDate,endDate));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER','READ_ONLY')")
     @GetMapping("/getAllFilters")
     public ResponseEntity<?> getAllFilters(@RequestParam String allFilterType){
         System.out.println("Filter chosen "+allFilterType);

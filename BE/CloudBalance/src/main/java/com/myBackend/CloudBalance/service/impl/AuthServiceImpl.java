@@ -6,6 +6,7 @@ import com.myBackend.CloudBalance.dto.AuthResponseDto;
 import com.myBackend.CloudBalance.entity.RefreshToken;
 import com.myBackend.CloudBalance.entity.User;
 //import com.myBackend.CloudBalance.repository.BlacklistRepository;
+import com.myBackend.CloudBalance.exceptions.InvalidRefreshTokenException;
 import com.myBackend.CloudBalance.repository.UserDetailsRepository;
 import com.myBackend.CloudBalance.service.AuthService;
 import com.myBackend.CloudBalance.service.RefreshTokenService;
@@ -75,7 +76,9 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<?> refreshToken(String token){
 
         System.out.println(token);
-        RefreshToken refreshToken = refreshTokenService.findByToken(token).orElseThrow(()-> new RuntimeException("Refresh token is not in db"));
+        if(token == null)
+            throw new InvalidRefreshTokenException("Token was not sent");
+        RefreshToken refreshToken = refreshTokenService.findByToken(token).orElseThrow(()-> new InvalidRefreshTokenException("Refresh token is not in db"));
         if(refreshTokenService.verifyExpiration(refreshToken)){
             User userFound = refreshToken.getUser();
             String accessToken = jwtUtil.generateToken(userFound.getEmail(), userFound.getRole().toString());
@@ -92,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
 
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(accessToken);
         }else{
-            throw  new RuntimeException("Refresh token is not in db");
+            throw  new InvalidRefreshTokenException("Refresh token expired");
         }
     }
 
@@ -106,15 +109,8 @@ public class AuthServiceImpl implements AuthService {
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getEmail());
             User user = userService.getUser(authRequestDTO.getEmail());
 
-//            *********************
-
-
             user.setLastLogin(Instant.now());
             userDetailsRepository.save(user);
-
-
-
-//            *********************
 
             String accessToken = jwtUtil.generateToken(authRequestDTO.getEmail(), "ROLE_"+ user.getRole().name());
             ResponseCookie responseCookie = ResponseCookie.from("token", refreshToken.getToken())
@@ -126,6 +122,7 @@ public class AuthServiceImpl implements AuthService {
                     .build();
 //
             AuthResponseDto authResponseDto = new AuthResponseDto(user.getId(), user.getFirstName(), user.getLastName(), user.getRole().name(), accessToken);
+            System.out.println(authResponseDto);
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(authResponseDto);
         }else{
             throw  new UsernameNotFoundException("Invalid user request");

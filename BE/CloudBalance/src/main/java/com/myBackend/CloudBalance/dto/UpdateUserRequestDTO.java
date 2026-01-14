@@ -17,9 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 public class UpdateUserRequestDTO {
 
-//    @NotBlank(message = "ID is required")
-//    private Long id;
-
     @NotBlank(message = "First Name is required")
     private String firstName;
 
@@ -27,7 +24,7 @@ public class UpdateUserRequestDTO {
     private String lastName;
 
     @NotBlank(message = "Email is required")
-    @Email
+    @Email(message = "Email must be valid")
     private String email;
 
     @NotBlank(message = "Role is required")

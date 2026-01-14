@@ -25,7 +25,8 @@ public class AccountController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/me/account")
-    public ResponseEntity<CreateAccountResponseDTO> createAccount(@RequestBody CreateAccountRequestDTO createAccountRequestDTO,Authentication authentication){
+    public ResponseEntity<CreateAccountResponseDTO> createAccount(@Valid @RequestBody CreateAccountRequestDTO createAccountRequestDTO,Authentication authentication){
+
 
         System.out.println(createAccountRequestDTO.getAccountId());
         System.out.println(createAccountRequestDTO.getAccountName());
@@ -56,6 +57,7 @@ public class AccountController {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
+        System.out.println("ID is "+userDetails.getUserId());
         List<GetAccountsResponseDTO> accountsResponseDTOS = accountService.getAllAccountsForASpecificUser(userDetails.getUserId());
         return ResponseEntity.ok().body(accountsResponseDTOS);
     }

@@ -5,19 +5,34 @@ import com.myBackend.CloudBalance.service.CostExplorerService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CostExplorerServiceImpl implements CostExplorerService {
 
     private final NamedParameterJdbcTemplate snowflakeJdbcTemplate;
     private final SnowflakeRepository snowflakeRepository;
+
+    public void helperAddAllGroupByInSet(Set<String> allGroups){
+        allGroups.add("SERVICE");
+        allGroups.add("INSTANCE_TYPE");
+        allGroups.add("ACCOUNT_ID");
+        allGroups.add("USAGE_TYPE");
+        allGroups.add("PLATFORM");
+        allGroups.add("REGION");
+        allGroups.add("PURCHASE_OPTION");
+        allGroups.add("USAGE_TYPE_GROUP");
+        allGroups.add("API_OPERATION");
+        allGroups.add("RESOURCE");
+        allGroups.add("AVAILABILITY_ZONE");
+        allGroups.add("TENANCY");
+        allGroups.add("LEGAL_ENTITY");
+        allGroups.add("BILLING_ENTITY");
+    }
 
     public CostExplorerServiceImpl(@Qualifier("snowflakeJdbcTemplate") JdbcTemplate snowflakeJdbcTemplate, SnowflakeRepository snowflakeRepository){
         this.snowflakeJdbcTemplate = new NamedParameterJdbcTemplate(snowflakeJdbcTemplate);
@@ -53,6 +68,16 @@ public class CostExplorerServiceImpl implements CostExplorerService {
                              List<String> legalEntity,
                              List<String> billingEntity,
                              LocalDate startDate, LocalDate endDate) {
+
+        Set<String> allGroups = new HashSet<>();
+
+        helperAddAllGroupByInSet(allGroups);
+        if(!allGroups.contains(groupBy))
+            throw new IllegalArgumentException("Invalid groupBy Value "+groupBy);
+
+        if(startDate!=null && endDate!=null && startDate.isAfter(endDate)){
+            throw new IllegalArgumentException("End Date cannot be before Start Date");
+        }
 
         groupBy = (groupBy == null || groupBy.isEmpty()) ? "SERVICE" : groupBy;
 
@@ -91,7 +116,7 @@ public class CostExplorerServiceImpl implements CostExplorerService {
             parameters.put("startDate", startDate.toString());
         }
         if(endDate!=null){
-            queryBuilder.append("AND BILL_DATE < :endDate");
+            queryBuilder.append("AND BILL_DATE <= :endDate ");
             parameters.put("endDate", endDate.toString());
         }
 
@@ -105,6 +130,11 @@ public class CostExplorerServiceImpl implements CostExplorerService {
 
     @Override
     public List<String> getAllFilterType(String allFilterType) {
+
+        HashSet<String> st = new HashSet<>();
+        helperAddAllGroupByInSet(st);
+        if(!st.contains(allFilterType.toUpperCase()))
+            throw new BadCredentialsException("Wrong filter type has been sent");
 
         String sql = "SELECT DISTINCT "+allFilterType+" FROM COSTREPORT WHERE "+allFilterType+" IS NOT NULL ORDER BY "+allFilterType+" ASC";
         return snowflakeJdbcTemplate.getJdbcOperations().queryForList(sql, String.class);
